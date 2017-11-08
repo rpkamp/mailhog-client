@@ -17,3 +17,7 @@ before_script:
 script:
   - make test
 
+cache:
+  directories:
+    - $HOME/.composer/cache/files
+
