@@ -11,7 +11,7 @@ matrix:
 before_script:
   - wget -O mailhog https://github.com/mailhog/MailHog/releases/download/v1.0.0/MailHog_linux_amd64
   - chmod +x mailhog
-  - (./mailhog -api-bind-addr 0.0.0.0:9025 -ui-bind-addr 0.0.0.0:9025 -smtp-bind-addr 0.0.0.0:2025 &) > /dev/null
+  - (./mailhog -api-bind-addr 0.0.0.0:9025 -ui-bind-addr 0.0.0.0:9025 -smtp-bind-addr 0.0.0.0:2025 &) > /dev/null 2>&1
   - composer install
 
 script:
