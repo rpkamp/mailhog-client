@@ -1,4 +1,4 @@
-# Mailhog API Client for PHP
+# Mailhog API Client for PHP [![Build Status](https://travis-ci.org/rpkamp/mailhog-client.svg?branch=master)](https://travis-ci.org/rpkamp/mailhog-client)
 
 _work in progress_
 
