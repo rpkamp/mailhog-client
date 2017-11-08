@@ -30,15 +30,23 @@ class MailhogApiV1Client
         $this->baseUri = $baseUri;
     }
 
+    /**
+     * @return Message[]
+     */
     public function getAllMessages(): array
     {
         $request = $this->requestFactory->createRequest('GET', sprintf('%s/api/v1/messages', $this->baseUri));
 
         $response = $this->httpClient->sendRequest($request);
 
-        $data = json_decode($response->getBody()->getContents(), true);
+        $allMessageData = json_decode($response->getBody()->getContents(), true);
 
-        return $data;
+        $messages = [];
+        foreach ($allMessageData as $messageData) {
+            $messages[] = new Message($messageData['ID']);
+        }
+
+        return $messages;
     }
 
     public function getNumberOfMessages(): int

@@ -65,7 +65,7 @@ class MailhogApiV1ClientTest extends TestCase
 
         $info = parse_url($_ENV['mailhog_smtp_dsn']);
 
-        $this->client->releaseMessage($message['ID'], $info['host'], $info['port'], 'me@myself.example');
+        $this->client->releaseMessage($message->messageId, $info['host'], $info['port'], 'me@myself.example');
 
         $this->assertEquals(2, $this->client->getNumberOfMessages());
     }
