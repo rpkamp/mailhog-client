@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/6.3/phpunit.xsd"
+         printerClass="rpkamp\FancyTestdoxPrinter"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         >
+    <php>
+        <env name="mailhog_smtp_dsn" value="smtp://localhost:2025" />
+        <env name="mailhog_api_uri" value="http://localhost:9025" />
+    </php>
+    <testsuites>
+        <testsuite name="integration">
+            <directory>tests/integration/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
