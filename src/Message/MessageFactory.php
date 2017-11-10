@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace rpkamp\Mailhog;
+namespace rpkamp\Mailhog\Message;
 
 class MessageFactory
 {

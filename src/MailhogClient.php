@@ -6,6 +6,8 @@ namespace rpkamp\Mailhog;
 use Generator;
 use Http\Client\HttpClient;
 use Http\Message\RequestFactory;
+use rpkamp\Mailhog\Message\Message;
+use rpkamp\Mailhog\Message\MessageFactory;
 
 class MailhogClient
 {
