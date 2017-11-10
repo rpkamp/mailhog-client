@@ -6,7 +6,7 @@ namespace rpkamp\Mailhog;
 use Http\Client\HttpClient;
 use Http\Message\RequestFactory;
 
-class MailhogApiV1Client
+class MailhogClient
 {
     /**
      * @var HttpClient
@@ -35,14 +35,14 @@ class MailhogApiV1Client
      */
     public function getAllMessages(): array
     {
-        $request = $this->requestFactory->createRequest('GET', sprintf('%s/api/v1/messages', $this->baseUri));
+        $request = $this->requestFactory->createRequest('GET', sprintf('%s/api/v2/messages', $this->baseUri));
 
         $response = $this->httpClient->sendRequest($request);
 
         $allMessageData = json_decode($response->getBody()->getContents(), true);
 
         $messages = [];
-        foreach ($allMessageData as $messageData) {
+        foreach ($allMessageData['items'] as $messageData) {
             $recipients = [];
             foreach ($messageData['To'] as $recipient) {
                 $recipients[] = sprintf('%s@%s', $recipient['Mailbox'], $recipient['Domain']);
@@ -64,7 +64,11 @@ class MailhogApiV1Client
 
     public function getNumberOfMessages(): int
     {
-        return count($this->getAllMessages());
+        $request = $this->requestFactory->createRequest('GET', sprintf('%s/api/v2/messages?limit=1', $this->baseUri));
+
+        $response = $this->httpClient->sendRequest($request);
+
+        return json_decode($response->getBody()->getContents(), true)['total'];
     }
 
     public function purgeMessages(): void

@@ -6,22 +6,22 @@ namespace rpkamp\Mailhog\Tests\integration;
 use Http\Client\Curl\Client;
 use Http\Message\MessageFactory\GuzzleMessageFactory;
 use PHPUnit\Framework\TestCase;
-use rpkamp\Mailhog\MailhogApiV1Client;
+use rpkamp\Mailhog\MailhogClient;
 use rpkamp\Mailhog\NoSuchMessageException;
 use rpkamp\Mailhog\Tests\MessageTrait;
 
-class MailhogApiV1ClientTest extends TestCase
+class MailhogClientTest extends TestCase
 {
     use MessageTrait;
 
     /**
-     * @var MailhogApiV1Client
+     * @var MailhogClient
      */
     private $client;
 
     public function setUp()
     {
-        $this->client = new MailhogApiV1Client(new Client(), new GuzzleMessageFactory(), $_ENV['mailhog_api_uri']);
+        $this->client = new MailhogClient(new Client(), new GuzzleMessageFactory(), $_ENV['mailhog_api_uri']);
         $this->client->purgeMessages();
     }
 
