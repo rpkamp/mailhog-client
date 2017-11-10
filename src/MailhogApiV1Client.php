@@ -43,7 +43,20 @@ class MailhogApiV1Client
 
         $messages = [];
         foreach ($allMessageData as $messageData) {
-            $messages[] = new Message($messageData['ID']);
+            $recipients = [];
+            foreach ($messageData['To'] as $recipient) {
+                $recipients[] = sprintf('%s@%s', $recipient['Mailbox'], $recipient['Domain']);
+            }
+
+            $sender = sprintf('%s@%s', $messageData['From']['Mailbox'], $messageData['From']['Domain']);
+
+            $messages[] = new Message(
+                $messageData['ID'],
+                $sender,
+                $recipients,
+                $messageData['Content']['Headers']['Subject'][0],
+                $messageData['Content']['Body']
+            );
         }
 
         return $messages;
@@ -77,5 +90,41 @@ class MailhogApiV1Client
         );
 
         $this->httpClient->sendRequest($request);
+    }
+
+    public function getMessageById(string $messageId): Message
+    {
+        $request = $this->requestFactory->createRequest(
+            'GET',
+            sprintf(
+                '%s/api/v1/messages/%s',
+                $this->baseUri,
+                $messageId
+            )
+        );
+
+        $response = $this->httpClient->sendRequest($request);
+
+        $messageData = json_decode($response->getBody()->getContents(), true);
+
+        if (null === $messageData) {
+            throw NoSuchMessageException::forMessageId($messageId);
+        }
+
+        $recipients = [];
+        foreach ($messageData['To'] as $recipient) {
+            $recipients[] = sprintf('%s@%s', $recipient['Mailbox'], $recipient['Domain']);
+        }
+
+        $sender = sprintf('%s@%s', $messageData['From']['Mailbox'], $messageData['From']['Domain']);
+
+        $message = new Message(
+            $messageData['ID'],
+            $sender,
+            $recipients,
+            $messageData['Content']['Headers']['Subject'][0],
+            $messageData['Content']['Body']
+        );
+        return $message;
     }
 }

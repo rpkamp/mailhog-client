@@ -10,8 +10,37 @@ class Message
      */
     public $messageId;
 
-    public function __construct(string $messageId)
-    {
+    /**
+     * @var string
+     */
+    public $sender;
+
+    /**
+     * @var string[]
+     */
+    public $recipients;
+
+    /**
+     * @var string
+     */
+    public $subject;
+
+    /**
+     * @var string
+     */
+    public $body;
+
+    public function __construct(
+        string $messageId,
+        string $sender,
+        array $recipients,
+        string $subject,
+        string $body
+    ) {
         $this->messageId = $messageId;
+        $this->sender = $sender;
+        $this->recipients = $recipients;
+        $this->subject = $subject;
+        $this->body = $body;
     }
 }

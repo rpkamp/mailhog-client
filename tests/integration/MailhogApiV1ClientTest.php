@@ -7,6 +7,7 @@ use Http\Client\Curl\Client;
 use Http\Message\MessageFactory\GuzzleMessageFactory;
 use PHPUnit\Framework\TestCase;
 use rpkamp\Mailhog\MailhogApiV1Client;
+use rpkamp\Mailhog\NoSuchMessageException;
 use rpkamp\Mailhog\Tests\MessageTrait;
 
 class MailhogApiV1ClientTest extends TestCase
@@ -51,7 +52,42 @@ class MailhogApiV1ClientTest extends TestCase
      */
     public function it_should_receive_all_message_data()
     {
-        $this->assertInternalType('array', $this->client->getAllMessages());
+        $this->sendTestEmail('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body');
+
+        $message = $this->client->getAllMessages()[0];
+
+        $this->assertNotEmpty($message->messageId);
+        $this->assertEquals('me@myself.example', $message->sender);
+        $this->assertEquals(['myself@myself.example'], $message->recipients);
+        $this->assertEquals('Test subject', $message->subject);
+        $this->assertEquals('Test body', $message->body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_receive_single_message_by_id()
+    {
+        $this->sendTestEmail('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body');
+
+        $allMessages = $this->client->getAllMessages();
+
+        $message = $this->client->getMessageById($allMessages[0]->messageId);
+
+        $this->assertNotEmpty($message->messageId);
+        $this->assertEquals('me@myself.example', $message->sender);
+        $this->assertEquals(['myself@myself.example'], $message->recipients);
+        $this->assertEquals('Test subject', $message->subject);
+        $this->assertEquals('Test body', $message->body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_throw_exception_when_no_message_found_by_id()
+    {
+        $this->expectException(NoSuchMessageException::class);
+        $this->client->getMessageById('123');
     }
 
     /**
