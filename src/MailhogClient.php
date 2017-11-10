@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace rpkamp\Mailhog;
 
+use Generator;
 use Http\Client\HttpClient;
 use Http\Message\RequestFactory;
 
@@ -30,36 +31,45 @@ class MailhogClient
         $this->baseUri = $baseUri;
     }
 
-    /**
-     * @return Message[]
-     */
-    public function getAllMessages(): array
+    public function getAllMessages(int $limit = 50): Generator
     {
-        $request = $this->requestFactory->createRequest('GET', sprintf('%s/api/v2/messages', $this->baseUri));
+        $start = 0;
+        while (true) {
+            $request = $this->requestFactory->createRequest(
+                'GET',
+                sprintf(
+                    '%s/api/v2/messages?limit=%d&start=%d',
+                    $this->baseUri,
+                    $limit,
+                    ++$start
+                )
+            );
 
-        $response = $this->httpClient->sendRequest($request);
+            $response = $this->httpClient->sendRequest($request);
 
-        $allMessageData = json_decode($response->getBody()->getContents(), true);
+            $allMessageData = json_decode($response->getBody()->getContents(), true);
 
-        $messages = [];
-        foreach ($allMessageData['items'] as $messageData) {
-            $recipients = [];
-            foreach ($messageData['To'] as $recipient) {
-                $recipients[] = sprintf('%s@%s', $recipient['Mailbox'], $recipient['Domain']);
+            if (0 === $allMessageData['count']) {
+                return; // all done!
             }
 
-            $sender = sprintf('%s@%s', $messageData['From']['Mailbox'], $messageData['From']['Domain']);
+            foreach ($allMessageData['items'] as $messageData) {
+                $recipients = [];
+                foreach ($messageData['To'] as $recipient) {
+                    $recipients[] = sprintf('%s@%s', $recipient['Mailbox'], $recipient['Domain']);
+                }
 
-            $messages[] = new Message(
-                $messageData['ID'],
-                $sender,
-                $recipients,
-                $messageData['Content']['Headers']['Subject'][0],
-                $messageData['Content']['Body']
-            );
+                $sender = sprintf('%s@%s', $messageData['From']['Mailbox'], $messageData['From']['Domain']);
+
+                yield new Message(
+                    $messageData['ID'],
+                    $sender,
+                    $recipients,
+                    $messageData['Content']['Headers']['Subject'][0],
+                    $messageData['Content']['Body']
+                );
+            }
         }
-
-        return $messages;
     }
 
     public function getNumberOfMessages(): int

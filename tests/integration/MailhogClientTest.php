@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace rpkamp\Mailhog\Tests\integration;
 
+use Generator;
 use Http\Client\Curl\Client;
 use Http\Message\MessageFactory\GuzzleMessageFactory;
 use PHPUnit\Framework\TestCase;
@@ -56,13 +57,31 @@ class MailhogClientTest extends TestCase
             $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body')
         );
 
-        $message = $this->client->getAllMessages()[0];
+        $message = iterator_to_array($this->client->getAllMessages())[0];
 
         $this->assertNotEmpty($message->messageId);
         $this->assertEquals('me@myself.example', $message->sender);
         $this->assertEquals(['myself@myself.example'], $message->recipients);
         $this->assertEquals('Test subject', $message->subject);
         $this->assertEquals('Test body', $message->body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_query_mailhog_until_all_messages_have_been_received()
+    {
+        for ($i = 0; $i < 5; $i++) {
+            $this->sendMessage(
+                $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body')
+            );
+        }
+
+        $messages = $this->client->getAllMessages(1);
+
+        $this->assertInstanceOf(Generator::class, $messages);
+
+        $this->assertCount(5, iterator_to_array($messages));
     }
 
     /**
@@ -76,7 +95,7 @@ class MailhogClientTest extends TestCase
 
         $allMessages = $this->client->getAllMessages();
 
-        $message = $this->client->getMessageById($allMessages[0]->messageId);
+        $message = $this->client->getMessageById(iterator_to_array($allMessages)[0]->messageId);
 
         $this->assertNotEmpty($message->messageId);
         $this->assertEquals('me@myself.example', $message->sender);
@@ -101,7 +120,7 @@ class MailhogClientTest extends TestCase
     {
         $this->sendDummyMessage();
 
-        $message = $this->client->getAllMessages()[0];
+        $message = iterator_to_array($this->client->getAllMessages())[0];
 
         $info = parse_url($_ENV['mailhog_smtp_dsn']);
 
