@@ -14,19 +14,24 @@ trait MessageTrait
      */
     private $mailer;
 
-    public function sendDummyEmail(): void
+    public function sendDummyMessage(): void
     {
-        $this->sendTestEmail('me@myself.example', 'myself@myself.example', 'Hello', 'How are you?');
+        $this->sendMessage(
+            $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Hello', 'How are you?')
+        );
     }
 
-    public function sendTestEmail(string $from, string $to, string $subject, string $body): void
+    public function createBasicMessage(string $from, string $to, string $subject, string $body): Swift_Message
     {
-        $message = (new Swift_Message())
+        return (new Swift_Message())
             ->setFrom($from)
             ->setTo($to)
             ->setSubject($subject)
             ->setBody($body);
+    }
 
+    public function sendMessage(Swift_Message $message): void
+    {
         $this->getMailer()->send($message);
     }
 

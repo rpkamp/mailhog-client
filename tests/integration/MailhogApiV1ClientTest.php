@@ -30,7 +30,7 @@ class MailhogApiV1ClientTest extends TestCase
      */
     public function it_should_return_correct_number_of_messages_in_inbox()
     {
-        $this->sendDummyEmail();
+        $this->sendDummyMessage();
 
         $this->assertEquals(1, $this->client->getNumberOfMessages());
     }
@@ -40,7 +40,7 @@ class MailhogApiV1ClientTest extends TestCase
      */
     public function it_should_purge_the_inbox()
     {
-        $this->sendDummyEmail();
+        $this->sendDummyMessage();
 
         $this->client->purgeMessages();
 
@@ -52,7 +52,9 @@ class MailhogApiV1ClientTest extends TestCase
      */
     public function it_should_receive_all_message_data()
     {
-        $this->sendTestEmail('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body');
+        $this->sendMessage(
+            $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body')
+        );
 
         $message = $this->client->getAllMessages()[0];
 
@@ -68,7 +70,9 @@ class MailhogApiV1ClientTest extends TestCase
      */
     public function it_should_receive_single_message_by_id()
     {
-        $this->sendTestEmail('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body');
+        $this->sendMessage(
+            $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body')
+        );
 
         $allMessages = $this->client->getAllMessages();
 
@@ -95,7 +99,7 @@ class MailhogApiV1ClientTest extends TestCase
      */
     public function it_should_release_a_message()
     {
-        $this->sendDummyEmail();
+        $this->sendDummyMessage();
 
         $message = $this->client->getAllMessages()[0];
 
