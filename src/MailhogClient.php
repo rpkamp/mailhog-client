@@ -54,20 +54,7 @@ class MailhogClient
             }
 
             foreach ($allMessageData['items'] as $messageData) {
-                $recipients = [];
-                foreach ($messageData['To'] as $recipient) {
-                    $recipients[] = sprintf('%s@%s', $recipient['Mailbox'], $recipient['Domain']);
-                }
-
-                $sender = sprintf('%s@%s', $messageData['From']['Mailbox'], $messageData['From']['Domain']);
-
-                yield new Message(
-                    $messageData['ID'],
-                    $sender,
-                    $recipients,
-                    $messageData['Content']['Headers']['Subject'][0],
-                    $messageData['Content']['Body']
-                );
+                yield MessageFactory::fromMailhogResponse($messageData);
             }
         }
     }
@@ -125,20 +112,6 @@ class MailhogClient
             throw NoSuchMessageException::forMessageId($messageId);
         }
 
-        $recipients = [];
-        foreach ($messageData['To'] as $recipient) {
-            $recipients[] = sprintf('%s@%s', $recipient['Mailbox'], $recipient['Domain']);
-        }
-
-        $sender = sprintf('%s@%s', $messageData['From']['Mailbox'], $messageData['From']['Domain']);
-
-        $message = new Message(
-            $messageData['ID'],
-            $sender,
-            $recipients,
-            $messageData['Content']['Headers']['Subject'][0],
-            $messageData['Content']['Body']
-        );
-        return $message;
+        return MessageFactory::fromMailhogResponse($messageData);
     }
 }
