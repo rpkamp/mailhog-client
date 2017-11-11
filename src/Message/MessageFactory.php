@@ -26,7 +26,8 @@ class MessageFactory
             $mailhogResponse['Content']['Headers']['Subject'][0],
             count($parts)
                 ? static::findBodyMime($parts)
-                : $mailhogResponse['Content']['Body']
+                : $mailhogResponse['Content']['Body'],
+            count($parts) ? self::getAttachments($parts) : []
         );
     }
 
@@ -52,15 +53,48 @@ class MessageFactory
     {
         $flattenedParts = [];
         foreach ($parts as $part) {
-            if (isset($part['MIME']['Parts'])) {
-                $flattenedParts = array_merge($parts, self::flattenParts($part['MIME']['Parts']));
-            }
-
             if (!isset($part['MIME']['Parts'])) {
                 $flattenedParts[] = $part;
+                continue;
             }
+
+            $flattenedParts = array_merge($flattenedParts, self::flattenParts($part['MIME']['Parts']));
         }
 
         return $flattenedParts;
+    }
+
+    private static function getAttachments(array $parts): array
+    {
+        $attachments = [];
+        foreach ($parts as $part) {
+            if (!isset($part['Headers']['Content-Disposition'])) {
+                continue;
+            }
+
+            if (stripos($part['Headers']['Content-Disposition'][0], 'attachment') === 0) {
+                preg_match('~filename=(?P<filename>.*?)(;|$)~i', $part['Headers']['Content-Disposition'][0], $matches);
+
+                $mimeType = 'application/octet-stream';
+                if (isset($part['Headers']['Content-Type'][0])) {
+                    $mimeType = explode(';', $part['Headers']['Content-Type'][0])[0];
+                }
+
+                $body = $part['Body'];
+                if (isset($part['Headers']['Content-Transfer-Encoding'][0])
+                    && $part['Headers']['Content-Transfer-Encoding'][0] === 'base64'
+                ) {
+                    $body = base64_decode($part['Body']);
+                }
+
+                $attachments[] = new Attachment(
+                    $matches['filename'] ?? 'unknown',
+                    $mimeType,
+                    $body
+                );
+            }
+        }
+
+        return $attachments;
     }
 }

@@ -8,6 +8,7 @@ use Http\Client\Curl\Client;
 use Http\Message\MessageFactory\GuzzleMessageFactory;
 use PHPUnit\Framework\TestCase;
 use rpkamp\Mailhog\MailhogClient;
+use rpkamp\Mailhog\Message\Attachment;
 use rpkamp\Mailhog\NoSuchMessageException;
 use rpkamp\Mailhog\Tests\MessageTrait;
 use Swift_Attachment;
@@ -220,6 +221,46 @@ class MailhogClientTest extends TestCase
                     ->addPart('<h1>Hello world</h1>', 'TEXT/HTML')
             ],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_hydrate_attachments()
+    {
+        $message = (new Swift_Message())
+            ->setFrom('me@myself.example')
+            ->setTo('myself@myself.example')
+            ->setSubject('Test subject')
+            ->attach(new Swift_Attachment(
+                new Swift_ByteStream_FileByteStream(__DIR__.'/../Fixtures/lorem-ipsum.txt'),
+                'lorem-ipsum.txt',
+                'text/plain'
+            ))
+            ->attach(new Swift_Attachment(
+                new Swift_ByteStream_FileByteStream(__DIR__.'/../Fixtures/hog.png'),
+                'hog.png',
+                'image/png'
+            ))
+            ->addPart('Hello world', 'text/plain');
+
+        $this->sendMessage($message);
+
+        $allMessages = $this->client->getAllMessages();
+
+        $message = iterator_to_array($allMessages)[0];
+
+        $this->assertCount(2, $message->attachments);
+
+        $this->assertEquals(
+            new Attachment('lorem-ipsum.txt', 'text/plain', file_get_contents(__DIR__.'/../Fixtures/lorem-ipsum.txt')),
+            $message->attachments[0]
+        );
+
+        $this->assertEquals(
+            new Attachment('hog.png', 'image/png', file_get_contents(__DIR__.'/../Fixtures/hog.png')),
+            $message->attachments[1]
+        );
     }
 
     /**

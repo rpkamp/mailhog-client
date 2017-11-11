@@ -30,17 +30,24 @@ class Message
      */
     public $body;
 
+    /**
+     * @var array
+     */
+    public $attachments;
+
     public function __construct(
         string $messageId,
         string $sender,
         array $recipients,
         string $subject,
-        string $body
+        string $body,
+        array $attachments
     ) {
         $this->messageId = $messageId;
         $this->sender = $sender;
         $this->recipients = $recipients;
         $this->subject = $subject;
         $this->body = $body;
+        $this->attachments = $attachments;
     }
 }
