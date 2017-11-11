@@ -33,6 +33,9 @@ class MailhogClient
         $this->baseUri = $baseUri;
     }
 
+    /**
+     * @return Generator|Message[]
+     */
     public function findAllMessages(int $limit = 50): Generator
     {
         $start = 0;
@@ -59,6 +62,43 @@ class MailhogClient
                 yield MessageFactory::fromMailhogResponse($messageData);
             }
         }
+    }
+
+    /**
+     * @return Message[]
+     */
+    public function findLatestMessages(int $numberOfMessages): array
+    {
+        $request = $this->requestFactory->createRequest(
+            'GET',
+            sprintf(
+                '%s/api/v2/messages?limit=%d',
+                $this->baseUri,
+                $numberOfMessages
+            )
+        );
+
+        $response = $this->httpClient->sendRequest($request);
+
+        $allMessageData = json_decode($response->getBody()->getContents(), true);
+
+        $messages = [];
+        foreach ($allMessageData['items'] as $messageData) {
+            $messages[] = MessageFactory::fromMailhogResponse($messageData);
+        }
+
+        return $messages;
+    }
+
+    public function getLastMessage(): Message
+    {
+        $messages = $this->findLatestMessages(1);
+
+        if (count($messages) === 0) {
+            throw new NoSuchMessageException('No last message found. Inbox empty?');
+        }
+
+        return $messages[0];
     }
 
     public function getNumberOfMessages(): int

@@ -73,6 +73,47 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
+    public function it_should_find_latest_messages()
+    {
+        for ($i = 1; $i <= 10; $i++) {
+            $this->sendDummyMessage();
+
+            $this->assertCount($i, $this->client->findLatestMessages($i));
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_find_last_message()
+    {
+        for ($i = 1; $i <= 3; $i++) {
+            $this->sendMessage(
+                $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject '.$i, 'Test body')
+            );
+        }
+
+        $message = $this->client->getLastMessage();
+
+        $this->assertNotEmpty($message->messageId);
+        $this->assertEquals('me@myself.example', $message->sender);
+        $this->assertEquals(['myself@myself.example'], $message->recipients);
+        $this->assertEquals('Test subject 3', $message->subject);
+        $this->assertEquals('Test body', $message->body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_throw_exception_when_there_is_no_last_message()
+    {
+        $this->expectException(NoSuchMessageException::class);
+        $this->client->getLastMessage();
+    }
+
+    /**
+     * @test
+     */
     public function it_should_query_mailhog_until_all_messages_have_been_received()
     {
         for ($i = 0; $i < 5; $i++) {
