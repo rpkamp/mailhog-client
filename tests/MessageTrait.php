@@ -17,8 +17,13 @@ trait MessageTrait
     public function sendDummyMessage(): void
     {
         $this->sendMessage(
-            $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Hello', 'How are you?')
+            $this->createDummyMessage()
         );
+    }
+
+    public function createDummyMessage(): Swift_Message
+    {
+        return $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Hello', 'How are you?');
     }
 
     public function createBasicMessage(string $from, string $to, string $subject, string $body): Swift_Message

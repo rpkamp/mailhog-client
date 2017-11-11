@@ -10,6 +10,9 @@ use PHPUnit\Framework\TestCase;
 use rpkamp\Mailhog\MailhogClient;
 use rpkamp\Mailhog\NoSuchMessageException;
 use rpkamp\Mailhog\Tests\MessageTrait;
+use Swift_Attachment;
+use Swift_ByteStream_FileByteStream;
+use Swift_Message;
 
 class MailhogClientTest extends TestCase
 {
@@ -86,12 +89,11 @@ class MailhogClientTest extends TestCase
 
     /**
      * @test
+     * @dataProvider messageProvider
      */
-    public function it_should_receive_single_message_by_id()
+    public function it_should_receive_single_message_by_id(Swift_Message $messageToSend, array $recipients)
     {
-        $this->sendMessage(
-            $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body')
-        );
+        $this->sendMessage($messageToSend);
 
         $allMessages = $this->client->getAllMessages();
 
@@ -99,9 +101,125 @@ class MailhogClientTest extends TestCase
 
         $this->assertNotEmpty($message->messageId);
         $this->assertEquals('me@myself.example', $message->sender);
+        $this->assertEquals($recipients, $message->recipients);
+        $this->assertEquals('Test subject', $message->subject);
+        $this->assertEquals('Test body', $message->body);
+    }
+
+    public function messageProvider()
+    {
+        $message = $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body');
+
+        return [
+            'single recipient' => [
+                $message,
+                ['myself@myself.example']
+            ],
+            'multiple recipients' => [
+                (clone $message)->addTo('i@myself.example'),
+                ['myself@myself.example', 'i@myself.example'],
+            ],
+        ];
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_hydrate_message_with_attachment()
+    {
+        $message = $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body');
+        $message->attach(new Swift_Attachment(
+            new Swift_ByteStream_FileByteStream(__DIR__.'/../Fixtures/lorem-ipsum.txt'),
+            'lorem-ipsum.txt',
+            'text/plain'
+        ));
+
+        $this->sendMessage($message);
+
+        $allMessages = $this->client->getAllMessages();
+
+        $message = iterator_to_array($allMessages)[0];
+
+        $this->assertNotEmpty($message->messageId);
+        $this->assertEquals('me@myself.example', $message->sender);
         $this->assertEquals(['myself@myself.example'], $message->recipients);
         $this->assertEquals('Test subject', $message->subject);
         $this->assertEquals('Test body', $message->body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_hydrate_message_with_attachment_before_body()
+    {
+        $message = (new Swift_Message())
+            ->setFrom('me@myself.example')
+            ->setTo('myself@myself.example')
+            ->setSubject('Test subject')
+            ->attach(new Swift_Attachment(
+                new Swift_ByteStream_FileByteStream(__DIR__.'/../Fixtures/lorem-ipsum.txt'),
+                'lorem-ipsum.txt',
+                'text/plain'
+            ))
+            ->addPart('Hello world', 'text/plain');
+
+        $this->sendMessage($message);
+
+        $allMessages = $this->client->getAllMessages();
+
+        $message = iterator_to_array($allMessages)[0];
+
+        $this->assertNotEmpty($message->messageId);
+        $this->assertEquals('me@myself.example', $message->sender);
+        $this->assertEquals(['myself@myself.example'], $message->recipients);
+        $this->assertEquals('Test subject', $message->subject);
+        $this->assertEquals('Hello world', $message->body);
+    }
+
+    /**
+     * @test
+     * @dataProvider htmlMessageProvider
+     */
+    public function it_should_prefer_html_part_over_plaintext_part(Swift_Message $messageToSend)
+    {
+        $this->sendMessage($messageToSend);
+
+        $allMessages = $this->client->getAllMessages();
+
+        $message = iterator_to_array($allMessages)[0];
+
+        $this->assertEquals('<h1>Hello world</h1>', $message->body);
+    }
+
+    public function htmlMessageProvider()
+    {
+        $message = (new Swift_Message())
+            ->setFrom('me@myself.example')
+            ->setTo('myself@myself.example')
+            ->setSubject('Test subject');
+
+        return [
+            'html first' => [
+                (clone $message)
+                    ->addPart('<h1>Hello world</h1>', 'text/html')
+                    ->addPart('Hello world', 'text/plain')
+            ],
+            'plaintext first' => [
+                (clone $message)
+                    ->addPart('Hello world', 'text/plain')
+                    ->addPart('<h1>Hello world</h1>', 'text/html')
+            ],
+            'mime capitals, html first' => [
+                (clone $message)
+                    ->addPart('<h1>Hello world</h1>', 'TEXT/HTML')
+                    ->addPart('Hello world', 'TEXT/PLAIN')
+            ],
+            'mime capitals, plaintext first' => [
+                (clone $message)
+                    ->addPart('Hello world', 'TEXT/PLAIN')
+                    ->addPart('<h1>Hello world</h1>', 'TEXT/HTML')
+            ],
+        ];
     }
 
     /**
