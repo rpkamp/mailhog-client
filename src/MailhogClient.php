@@ -33,7 +33,7 @@ class MailhogClient
         $this->baseUri = $baseUri;
     }
 
-    public function getAllMessages(int $limit = 50): Generator
+    public function findAllMessages(int $limit = 50): Generator
     {
         $start = 0;
         while (true) {

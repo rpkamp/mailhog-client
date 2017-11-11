@@ -61,7 +61,7 @@ class MailhogClientTest extends TestCase
             $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body')
         );
 
-        $message = iterator_to_array($this->client->getAllMessages())[0];
+        $message = iterator_to_array($this->client->findAllMessages())[0];
 
         $this->assertNotEmpty($message->messageId);
         $this->assertEquals('me@myself.example', $message->sender);
@@ -81,7 +81,7 @@ class MailhogClientTest extends TestCase
             );
         }
 
-        $messages = $this->client->getAllMessages(1);
+        $messages = $this->client->findAllMessages(1);
 
         $this->assertInstanceOf(Generator::class, $messages);
 
@@ -96,7 +96,7 @@ class MailhogClientTest extends TestCase
     {
         $this->sendMessage($messageToSend);
 
-        $allMessages = $this->client->getAllMessages();
+        $allMessages = $this->client->findAllMessages();
 
         $message = $this->client->getMessageById(iterator_to_array($allMessages)[0]->messageId);
 
@@ -137,7 +137,7 @@ class MailhogClientTest extends TestCase
 
         $this->sendMessage($message);
 
-        $allMessages = $this->client->getAllMessages();
+        $allMessages = $this->client->findAllMessages();
 
         $message = iterator_to_array($allMessages)[0];
 
@@ -166,7 +166,7 @@ class MailhogClientTest extends TestCase
 
         $this->sendMessage($message);
 
-        $allMessages = $this->client->getAllMessages();
+        $allMessages = $this->client->findAllMessages();
 
         $message = iterator_to_array($allMessages)[0];
 
@@ -185,7 +185,7 @@ class MailhogClientTest extends TestCase
     {
         $this->sendMessage($messageToSend);
 
-        $allMessages = $this->client->getAllMessages();
+        $allMessages = $this->client->findAllMessages();
 
         $message = iterator_to_array($allMessages)[0];
 
@@ -246,7 +246,7 @@ class MailhogClientTest extends TestCase
 
         $this->sendMessage($message);
 
-        $allMessages = $this->client->getAllMessages();
+        $allMessages = $this->client->findAllMessages();
 
         $message = iterator_to_array($allMessages)[0];
 
@@ -279,7 +279,7 @@ class MailhogClientTest extends TestCase
     {
         $this->sendDummyMessage();
 
-        $message = iterator_to_array($this->client->getAllMessages())[0];
+        $message = iterator_to_array($this->client->findAllMessages())[0];
 
         $info = parse_url($_ENV['mailhog_smtp_dsn']);
 
