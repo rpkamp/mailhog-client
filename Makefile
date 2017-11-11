@@ -3,7 +3,11 @@ help:
 	@awk '/^#/{c=substr($$0,3);next}c&&/^[[:alpha:]][[:alnum:]_-]+:/{print substr($$1,1,index($$1,":")),c}1{c=0}' $(MAKEFILE_LIST) | column -s: -t
 
 # Run all tests
-test: code-style unit-tests
+test: lint code-style unit-tests
+
+# Lint all php files
+lint:
+	vendor/bin/parallel-lint --exclude vendor/ .
 
 # Check code for style problems
 code-style: phpmd phpcs
@@ -20,4 +24,4 @@ phpcs:
 unit-tests:
 	vendor/bin/phpunit
 
-.PHONY: help test code-style phpmd phpcs unit-tests
+.PHONY: help test lint code-style phpmd phpcs unit-tests
