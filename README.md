@@ -30,8 +30,6 @@ $client = new MailhogClient(new SomeHttpClient(), new SomeRequestFactory(), 'htt
 
 Where `SomeHttpClient` is a class that implements `Http\Client\HttpClient` from HTTPlug and `SomeMessageFactory` is a class that implements `Http\Message\RequestFactory` from HTTPlug, and `my.mailhog.host` is the hostname (or IP) where mailhog is running, and `port` is the port where the mailhog API is running (by default 8025).
 
-```
-
 ## Run tests
 
 Make sure you have Mailhog running and run:
