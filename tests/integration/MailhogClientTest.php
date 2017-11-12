@@ -68,7 +68,7 @@ class MailhogClientTest extends TestCase
 
         $this->assertNotEmpty($message->messageId);
         $this->assertEquals(new Contact('me@myself.example'), $message->sender);
-        $this->assertEquals([new Contact('myself@myself.example')], $message->recipients);
+        $this->assertTrue($message->recipients->contains(new Contact('myself@myself.example')));
         $this->assertEquals('Test subject', $message->subject);
         $this->assertEquals('Test body', $message->body);
     }
@@ -100,7 +100,7 @@ class MailhogClientTest extends TestCase
 
         $this->assertNotEmpty($message->messageId);
         $this->assertEquals(new Contact('me@myself.example'), $message->sender);
-        $this->assertEquals([new Contact('myself@myself.example')], $message->recipients);
+        $this->assertTrue($message->recipients->contains(new Contact('myself@myself.example')));
         $this->assertEquals('Test subject 3', $message->subject);
         $this->assertEquals('Test body', $message->body);
     }
@@ -136,7 +136,7 @@ class MailhogClientTest extends TestCase
      * @test
      * @dataProvider messageProvider
      */
-    public function it_should_receive_single_message_by_id(Swift_Message $messageToSend, array $recipients)
+    public function it_should_receive_single_message_by_id(Swift_Message $messageToSend, array $expectedRecipients)
     {
         $this->sendMessage($messageToSend);
 
@@ -146,7 +146,11 @@ class MailhogClientTest extends TestCase
 
         $this->assertNotEmpty($message->messageId);
         $this->assertEquals(new Contact('me@myself.example'), $message->sender);
-        $this->assertEquals($recipients, $message->recipients);
+
+        foreach ($expectedRecipients as $expectedRecipient) {
+            $this->assertTrue($message->recipients->contains($expectedRecipient));
+        }
+
         $this->assertEquals('Test subject', $message->subject);
         $this->assertEquals('Test body', $message->body);
     }
@@ -190,25 +194,29 @@ class MailhogClientTest extends TestCase
 
         $this->assertNotEmpty($messages[0]->messageId);
         $this->assertEquals(new Contact('me@myself.example'), $messages[0]->sender);
-        $this->assertEquals([new Contact('myself@myself.example')], $messages[0]->recipients);
-        $this->assertEquals([new Contact('cc@myself.example'), new Contact('cc2@myself.example')], $messages[0]->ccRecipients);
-        $this->assertEquals([new Contact('bcc2@myself.example')], $messages[0]->bccRecipients);
+        $this->assertTrue($messages[0]->recipients->contains(new Contact('myself@myself.example')));
+        $this->assertTrue($messages[0]->ccRecipients->contains(new Contact('cc@myself.example')));
+        $this->assertTrue($messages[0]->ccRecipients->contains(new Contact('cc2@myself.example')));
+        $this->assertTrue($messages[0]->bccRecipients->contains(new Contact('bcc2@myself.example')));
         $this->assertEquals('Test subject', $messages[0]->subject);
         $this->assertEquals('Test body', $messages[0]->body);
 
         $this->assertNotEmpty($messages[1]->messageId);
         $this->assertEquals(new Contact('me@myself.example'), $messages[1]->sender);
-        $this->assertEquals([new Contact('myself@myself.example')], $messages[1]->recipients);
-        $this->assertEquals([new Contact('cc@myself.example'), new Contact('cc2@myself.example')], $messages[1]->ccRecipients);
-        $this->assertEquals([new Contact('bcc@myself.example')], $messages[1]->bccRecipients);
+
+        $this->assertTrue($messages[1]->recipients->contains(new Contact('myself@myself.example')));
+        $this->assertTrue($messages[1]->ccRecipients->contains(new Contact('cc@myself.example')));
+        $this->assertTrue($messages[1]->ccRecipients->contains(new Contact('cc2@myself.example')));
+        $this->assertTrue($messages[1]->bccRecipients->contains(new Contact('bcc@myself.example')));
         $this->assertEquals('Test subject', $messages[1]->subject);
         $this->assertEquals('Test body', $messages[1]->body);
 
         $this->assertNotEmpty($messages[2]->messageId);
         $this->assertEquals(new Contact('me@myself.example'), $messages[2]->sender);
-        $this->assertEquals([new Contact('myself@myself.example')], $messages[2]->recipients);
-        $this->assertEquals([new Contact('cc@myself.example'), new Contact('cc2@myself.example')], $messages[2]->ccRecipients);
-        $this->assertEquals([], $messages[2]->bccRecipients);
+        $this->assertTrue($messages[2]->recipients->contains(new Contact('myself@myself.example')));
+        $this->assertTrue($messages[2]->ccRecipients->contains(new Contact('cc@myself.example')));
+        $this->assertTrue($messages[2]->ccRecipients->contains(new Contact('cc2@myself.example')));
+        $this->assertCount(0, $messages[2]->bccRecipients);
         $this->assertEquals('Test subject', $messages[2]->subject);
         $this->assertEquals('Test body', $messages[2]->body);
     }
@@ -233,17 +241,17 @@ class MailhogClientTest extends TestCase
 
         $this->assertNotEmpty($messages[0]->messageId);
         $this->assertEquals(new Contact('me@myself.example'), $messages[0]->sender);
-        $this->assertEquals([], $messages[0]->recipients);
-        $this->assertEquals([], $messages[0]->ccRecipients);
-        $this->assertEquals([new Contact('bcc2@myself.example')], $messages[0]->bccRecipients);
+        $this->assertCount(0, $messages[0]->recipients);
+        $this->assertCount(0, $messages[0]->ccRecipients);
+        $this->assertTrue($messages[0]->bccRecipients->contains(new Contact('bcc2@myself.example')));
         $this->assertEquals('Test subject', $messages[0]->subject);
         $this->assertEquals('Test body', $messages[0]->body);
 
         $this->assertNotEmpty($messages[1]->messageId);
         $this->assertEquals(new Contact('me@myself.example'), $messages[1]->sender);
-        $this->assertEquals([], $messages[1]->recipients);
-        $this->assertEquals([], $messages[1]->ccRecipients);
-        $this->assertEquals([new Contact('bcc@myself.example')], $messages[1]->bccRecipients);
+        $this->assertCount(0, $messages[1]->recipients);
+        $this->assertCount(0, $messages[1]->ccRecipients);
+        $this->assertTrue($messages[1]->bccRecipients->contains(new Contact('bcc@myself.example')));
         $this->assertEquals('Test subject', $messages[1]->subject);
         $this->assertEquals('Test body', $messages[1]->body);
     }
@@ -265,10 +273,10 @@ class MailhogClientTest extends TestCase
 
         $message = $this->client->getLastMessage();
 
-        $this->assertEquals('Me', $message->sender->name);
-        $this->assertEquals('Myself', $message->recipients[0]->name);
-        $this->assertEquals('CC Example', $message->ccRecipients[0]->name);
-        $this->assertEquals('BCC Example', $message->bccRecipients[0]->name);
+        $this->assertEquals(new Contact('me@myself.example', 'Me'), $message->sender);
+        $this->assertTrue($message->recipients->contains(new Contact('myself@myself.example', 'Myself')));
+        $this->assertTrue($message->ccRecipients->contains(new Contact('cc@myself.example', 'CC Example')));
+        $this->assertTrue($message->bccRecipients->contains(new Contact('bcc@myself.example', 'BCC Example')));
     }
 
     /**
@@ -291,7 +299,7 @@ class MailhogClientTest extends TestCase
 
         $this->assertNotEmpty($message->messageId);
         $this->assertEquals(new Contact('me@myself.example'), $message->sender);
-        $this->assertEquals([new Contact('myself@myself.example')], $message->recipients);
+        $this->assertTrue($message->recipients->contains(new Contact('myself@myself.example')));
         $this->assertEquals('Test subject', $message->subject);
         $this->assertEquals('Test body', $message->body);
     }
@@ -320,7 +328,7 @@ class MailhogClientTest extends TestCase
 
         $this->assertNotEmpty($message->messageId);
         $this->assertEquals(new Contact('me@myself.example'), $message->sender);
-        $this->assertEquals([new Contact('myself@myself.example')], $message->recipients);
+        $this->assertTrue($message->recipients->contains(new Contact('myself@myself.example')));
         $this->assertEquals('Test subject', $message->subject);
         $this->assertEquals('Hello world', $message->body);
     }

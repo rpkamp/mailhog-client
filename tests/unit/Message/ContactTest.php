@@ -42,4 +42,21 @@ class ContactTest extends TestCase
             ],
         ];
     }
+
+    /**
+     * @test
+     * @dataProvider sameContactProvider
+     */
+    public function it_should_indicate_when_equal_to_other_contact(Contact $contact)
+    {
+        $this->assertTrue($contact->equals($contact));
+    }
+
+    public function sameContactProvider()
+    {
+        return [
+            'e-mail address only' => [new Contact('me@myself.example')],
+            'e-mail address and name' => [new Contact('me@myself.example', 'Me')],
+        ];
+    }
 }

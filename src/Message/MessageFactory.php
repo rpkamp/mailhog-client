@@ -12,26 +12,15 @@ class MessageFactory
             $parts = static::flattenParts($mailhogResponse['MIME']['Parts']);
         }
 
-        $sender = Contact::fromString($mailhogResponse['Content']['Headers']['From'][0]);
-
-        $toRecipients = $ccRecipients = $bccRecipients = [];
-        if (isset($mailhogResponse['Content']['Headers']['To'][0])) {
-            $toRecipients = static::parseRecipients($mailhogResponse['Content']['Headers']['To'][0]);
-        }
-        if (isset($mailhogResponse['Content']['Headers']['Cc'][0])) {
-            $ccRecipients = static::parseRecipients($mailhogResponse['Content']['Headers']['Cc'][0]);
-        }
-        if (isset($mailhogResponse['Content']['Headers']['Bcc'][0])) {
-            $bccRecipients = static::parseRecipients($mailhogResponse['Content']['Headers']['Bcc'][0]);
-        }
+        $headers = $mailhogResponse['Content']['Headers'];
 
         return new Message(
             $mailhogResponse['ID'],
-            $sender,
-            $toRecipients,
-            $ccRecipients,
-            $bccRecipients,
-            $mailhogResponse['Content']['Headers']['Subject'][0],
+            Contact::fromString($headers['From'][0]),
+            ContactCollection::fromString($headers['To'][0] ?? ''),
+            ContactCollection::fromString($headers['Cc'][0] ?? ''),
+            ContactCollection::fromString($headers['Bcc'][0] ?? ''),
+            $headers['Subject'][0],
             count($parts)
                 ? static::findBodyMime($parts)
                 : $mailhogResponse['Content']['Body'],
@@ -104,17 +93,5 @@ class MessageFactory
         }
 
         return $attachments;
-    }
-
-    private static function parseRecipients(string $recipients): array
-    {
-        $recipientsRaw = array_map('trim', str_getcsv($recipients));
-
-        return array_map(
-            function ($recipient) {
-                return Contact::fromString($recipient);
-            },
-            $recipientsRaw
-        );
     }
 }

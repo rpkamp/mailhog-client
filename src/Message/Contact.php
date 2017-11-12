@@ -29,4 +29,9 @@ class Contact
 
         return new self($contact);
     }
+
+    public function equals(Contact $other): bool
+    {
+        return $this->emailAddress === $other->emailAddress && $this->name === $other->name;
+    }
 }
