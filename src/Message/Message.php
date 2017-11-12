@@ -21,6 +21,16 @@ class Message
     public $recipients;
 
     /**
+     * @var array
+     */
+    public $ccRecipients;
+
+    /**
+     * @var array
+     */
+    public $bccRecipients;
+
+    /**
      * @var string
      */
     public $subject;
@@ -39,6 +49,8 @@ class Message
         string $messageId,
         string $sender,
         array $recipients,
+        array $ccRecipients,
+        array $bccRecipients,
         string $subject,
         string $body,
         array $attachments
@@ -46,6 +58,8 @@ class Message
         $this->messageId = $messageId;
         $this->sender = $sender;
         $this->recipients = $recipients;
+        $this->ccRecipients = $ccRecipients;
+        $this->bccRecipients = $bccRecipients;
         $this->subject = $subject;
         $this->body = $body;
         $this->attachments = $attachments;

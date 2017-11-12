@@ -7,11 +7,6 @@ class MessageFactory
 {
     public static function fromMailhogResponse(array $mailhogResponse): Message
     {
-        $recipients = [];
-        foreach ($mailhogResponse['To'] as $recipient) {
-            $recipients[] = sprintf('%s@%s', $recipient['Mailbox'], $recipient['Domain']);
-        }
-
         $parts = [];
         if (isset($mailhogResponse['MIME']['Parts'])) {
             $parts = static::flattenParts($mailhogResponse['MIME']['Parts']);
@@ -19,10 +14,23 @@ class MessageFactory
 
         $sender = sprintf('%s@%s', $mailhogResponse['From']['Mailbox'], $mailhogResponse['From']['Domain']);
 
+        $toRecipients = $ccRecipients = $bccRecipients = [];
+        if (isset($mailhogResponse['Content']['Headers']['To'][0])) {
+            $toRecipients = static::parseRecipients($mailhogResponse['Content']['Headers']['To'][0]);
+        }
+        if (isset($mailhogResponse['Content']['Headers']['Cc'][0])) {
+            $ccRecipients = static::parseRecipients($mailhogResponse['Content']['Headers']['Cc'][0]);
+        }
+        if (isset($mailhogResponse['Content']['Headers']['Bcc'][0])) {
+            $bccRecipients = static::parseRecipients($mailhogResponse['Content']['Headers']['Bcc'][0]);
+        }
+
         return new Message(
             $mailhogResponse['ID'],
             $sender,
-            $recipients,
+            $toRecipients,
+            $ccRecipients,
+            $bccRecipients,
             $mailhogResponse['Content']['Headers']['Subject'][0],
             count($parts)
                 ? static::findBodyMime($parts)
@@ -96,5 +104,10 @@ class MessageFactory
         }
 
         return $attachments;
+    }
+
+    private static function parseRecipients(string $recipients): array
+    {
+        return array_map('trim', explode(',', $recipients));
     }
 }

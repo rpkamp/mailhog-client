@@ -167,6 +167,87 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
+    public function it_should_hydrate_message_with_cc_and_bcc_recipients()
+    {
+        $messageToSend = (new Swift_Message())
+            ->setFrom('me@myself.example')
+            ->setBody('Test body')
+            ->setSubject('Test subject')
+            ->addTo('myself@myself.example')
+            ->addCc('cc@myself.example')
+            ->addCc('cc2@myself.example')
+            ->addBcc('bcc@myself.example')
+            ->addBcc('bcc2@myself.example');
+
+        $this->sendMessage($messageToSend);
+
+        $this->assertEquals(3, $this->client->getNumberOfMessages());
+
+        $messages = $this->client->findLatestMessages(3);
+
+        $this->assertNotEmpty($messages[0]->messageId);
+        $this->assertEquals('me@myself.example', $messages[0]->sender);
+        $this->assertEquals(['myself@myself.example'], $messages[0]->recipients);
+        $this->assertEquals(['cc@myself.example', 'cc2@myself.example'], $messages[0]->ccRecipients);
+        $this->assertEquals(['bcc2@myself.example'], $messages[0]->bccRecipients);
+        $this->assertEquals('Test subject', $messages[0]->subject);
+        $this->assertEquals('Test body', $messages[0]->body);
+
+        $this->assertNotEmpty($messages[1]->messageId);
+        $this->assertEquals('me@myself.example', $messages[1]->sender);
+        $this->assertEquals(['myself@myself.example'], $messages[1]->recipients);
+        $this->assertEquals(['cc@myself.example', 'cc2@myself.example'], $messages[1]->ccRecipients);
+        $this->assertEquals(['bcc@myself.example'], $messages[1]->bccRecipients);
+        $this->assertEquals('Test subject', $messages[1]->subject);
+        $this->assertEquals('Test body', $messages[1]->body);
+
+        $this->assertNotEmpty($messages[2]->messageId);
+        $this->assertEquals('me@myself.example', $messages[2]->sender);
+        $this->assertEquals(['myself@myself.example'], $messages[2]->recipients);
+        $this->assertEquals(['cc@myself.example', 'cc2@myself.example'], $messages[2]->ccRecipients);
+        $this->assertEquals([], $messages[2]->bccRecipients);
+        $this->assertEquals('Test subject', $messages[2]->subject);
+        $this->assertEquals('Test body', $messages[2]->body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_hydrate_message_with_bcc_recipients_only()
+    {
+        $messageToSend = (new Swift_Message())
+            ->setFrom('me@myself.example')
+            ->setBody('Test body')
+            ->setSubject('Test subject')
+            ->addBcc('bcc@myself.example')
+            ->addBcc('bcc2@myself.example');
+
+        $this->sendMessage($messageToSend);
+
+        $this->assertEquals(2, $this->client->getNumberOfMessages());
+
+        $messages = $this->client->findLatestMessages(2);
+
+        $this->assertNotEmpty($messages[0]->messageId);
+        $this->assertEquals('me@myself.example', $messages[0]->sender);
+        $this->assertEquals([], $messages[0]->recipients);
+        $this->assertEquals([], $messages[0]->ccRecipients);
+        $this->assertEquals(['bcc2@myself.example'], $messages[0]->bccRecipients);
+        $this->assertEquals('Test subject', $messages[0]->subject);
+        $this->assertEquals('Test body', $messages[0]->body);
+
+        $this->assertNotEmpty($messages[1]->messageId);
+        $this->assertEquals('me@myself.example', $messages[1]->sender);
+        $this->assertEquals([], $messages[1]->recipients);
+        $this->assertEquals([], $messages[1]->ccRecipients);
+        $this->assertEquals(['bcc@myself.example'], $messages[1]->bccRecipients);
+        $this->assertEquals('Test subject', $messages[1]->subject);
+        $this->assertEquals('Test body', $messages[1]->body);
+    }
+
+    /**
+     * @test
+     */
     public function it_should_hydrate_message_with_attachment()
     {
         $message = $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body');
