@@ -9,6 +9,8 @@ use Http\Message\MessageFactory\GuzzleMessageFactory;
 use PHPUnit\Framework\TestCase;
 use rpkamp\Mailhog\MailhogClient;
 use rpkamp\Mailhog\Message\Attachment;
+use rpkamp\Mailhog\Message\Contact;
+use rpkamp\Mailhog\Message\Message;
 use rpkamp\Mailhog\NoSuchMessageException;
 use rpkamp\Mailhog\Tests\MessageTrait;
 use Swift_Attachment;
@@ -61,11 +63,12 @@ class MailhogClientTest extends TestCase
             $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body')
         );
 
+        /** @var Message $message */
         $message = iterator_to_array($this->client->findAllMessages())[0];
 
         $this->assertNotEmpty($message->messageId);
-        $this->assertEquals('me@myself.example', $message->sender);
-        $this->assertEquals(['myself@myself.example'], $message->recipients);
+        $this->assertEquals(new Contact('me@myself.example'), $message->sender);
+        $this->assertEquals([new Contact('myself@myself.example')], $message->recipients);
         $this->assertEquals('Test subject', $message->subject);
         $this->assertEquals('Test body', $message->body);
     }
@@ -96,8 +99,8 @@ class MailhogClientTest extends TestCase
         $message = $this->client->getLastMessage();
 
         $this->assertNotEmpty($message->messageId);
-        $this->assertEquals('me@myself.example', $message->sender);
-        $this->assertEquals(['myself@myself.example'], $message->recipients);
+        $this->assertEquals(new Contact('me@myself.example'), $message->sender);
+        $this->assertEquals([new Contact('myself@myself.example')], $message->recipients);
         $this->assertEquals('Test subject 3', $message->subject);
         $this->assertEquals('Test body', $message->body);
     }
@@ -142,7 +145,7 @@ class MailhogClientTest extends TestCase
         $message = $this->client->getMessageById(iterator_to_array($allMessages)[0]->messageId);
 
         $this->assertNotEmpty($message->messageId);
-        $this->assertEquals('me@myself.example', $message->sender);
+        $this->assertEquals(new Contact('me@myself.example'), $message->sender);
         $this->assertEquals($recipients, $message->recipients);
         $this->assertEquals('Test subject', $message->subject);
         $this->assertEquals('Test body', $message->body);
@@ -155,11 +158,11 @@ class MailhogClientTest extends TestCase
         return [
             'single recipient' => [
                 $message,
-                ['myself@myself.example']
+                [new Contact('myself@myself.example')]
             ],
             'multiple recipients' => [
                 (clone $message)->addTo('i@myself.example'),
-                ['myself@myself.example', 'i@myself.example'],
+                [new Contact('myself@myself.example'), new Contact('i@myself.example')],
             ],
         ];
     }
@@ -186,25 +189,25 @@ class MailhogClientTest extends TestCase
         $messages = $this->client->findLatestMessages(3);
 
         $this->assertNotEmpty($messages[0]->messageId);
-        $this->assertEquals('me@myself.example', $messages[0]->sender);
-        $this->assertEquals(['myself@myself.example'], $messages[0]->recipients);
-        $this->assertEquals(['cc@myself.example', 'cc2@myself.example'], $messages[0]->ccRecipients);
-        $this->assertEquals(['bcc2@myself.example'], $messages[0]->bccRecipients);
+        $this->assertEquals(new Contact('me@myself.example'), $messages[0]->sender);
+        $this->assertEquals([new Contact('myself@myself.example')], $messages[0]->recipients);
+        $this->assertEquals([new Contact('cc@myself.example'), new Contact('cc2@myself.example')], $messages[0]->ccRecipients);
+        $this->assertEquals([new Contact('bcc2@myself.example')], $messages[0]->bccRecipients);
         $this->assertEquals('Test subject', $messages[0]->subject);
         $this->assertEquals('Test body', $messages[0]->body);
 
         $this->assertNotEmpty($messages[1]->messageId);
-        $this->assertEquals('me@myself.example', $messages[1]->sender);
-        $this->assertEquals(['myself@myself.example'], $messages[1]->recipients);
-        $this->assertEquals(['cc@myself.example', 'cc2@myself.example'], $messages[1]->ccRecipients);
-        $this->assertEquals(['bcc@myself.example'], $messages[1]->bccRecipients);
+        $this->assertEquals(new Contact('me@myself.example'), $messages[1]->sender);
+        $this->assertEquals([new Contact('myself@myself.example')], $messages[1]->recipients);
+        $this->assertEquals([new Contact('cc@myself.example'), new Contact('cc2@myself.example')], $messages[1]->ccRecipients);
+        $this->assertEquals([new Contact('bcc@myself.example')], $messages[1]->bccRecipients);
         $this->assertEquals('Test subject', $messages[1]->subject);
         $this->assertEquals('Test body', $messages[1]->body);
 
         $this->assertNotEmpty($messages[2]->messageId);
-        $this->assertEquals('me@myself.example', $messages[2]->sender);
-        $this->assertEquals(['myself@myself.example'], $messages[2]->recipients);
-        $this->assertEquals(['cc@myself.example', 'cc2@myself.example'], $messages[2]->ccRecipients);
+        $this->assertEquals(new Contact('me@myself.example'), $messages[2]->sender);
+        $this->assertEquals([new Contact('myself@myself.example')], $messages[2]->recipients);
+        $this->assertEquals([new Contact('cc@myself.example'), new Contact('cc2@myself.example')], $messages[2]->ccRecipients);
         $this->assertEquals([], $messages[2]->bccRecipients);
         $this->assertEquals('Test subject', $messages[2]->subject);
         $this->assertEquals('Test body', $messages[2]->body);
@@ -229,20 +232,43 @@ class MailhogClientTest extends TestCase
         $messages = $this->client->findLatestMessages(2);
 
         $this->assertNotEmpty($messages[0]->messageId);
-        $this->assertEquals('me@myself.example', $messages[0]->sender);
+        $this->assertEquals(new Contact('me@myself.example'), $messages[0]->sender);
         $this->assertEquals([], $messages[0]->recipients);
         $this->assertEquals([], $messages[0]->ccRecipients);
-        $this->assertEquals(['bcc2@myself.example'], $messages[0]->bccRecipients);
+        $this->assertEquals([new Contact('bcc2@myself.example')], $messages[0]->bccRecipients);
         $this->assertEquals('Test subject', $messages[0]->subject);
         $this->assertEquals('Test body', $messages[0]->body);
 
         $this->assertNotEmpty($messages[1]->messageId);
-        $this->assertEquals('me@myself.example', $messages[1]->sender);
+        $this->assertEquals(new Contact('me@myself.example'), $messages[1]->sender);
         $this->assertEquals([], $messages[1]->recipients);
         $this->assertEquals([], $messages[1]->ccRecipients);
-        $this->assertEquals(['bcc@myself.example'], $messages[1]->bccRecipients);
+        $this->assertEquals([new Contact('bcc@myself.example')], $messages[1]->bccRecipients);
         $this->assertEquals('Test subject', $messages[1]->subject);
         $this->assertEquals('Test body', $messages[1]->body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_hydrate_names()
+    {
+        $messageToSend = (new Swift_Message())
+            ->setFrom('me@myself.example', 'Me')
+            ->setTo('myself@myself.example', 'Myself')
+            ->addCc('cc@myself.example', 'CC Example')
+            ->addBcc('bcc@myself.example', 'BCC Example')
+            ->setBody('Test body')
+            ->setSubject('Test subject');
+
+        $this->sendMessage($messageToSend);
+
+        $message = $this->client->getLastMessage();
+
+        $this->assertEquals('Me', $message->sender->name);
+        $this->assertEquals('Myself', $message->recipients[0]->name);
+        $this->assertEquals('CC Example', $message->ccRecipients[0]->name);
+        $this->assertEquals('BCC Example', $message->bccRecipients[0]->name);
     }
 
     /**
@@ -264,8 +290,8 @@ class MailhogClientTest extends TestCase
         $message = iterator_to_array($allMessages)[0];
 
         $this->assertNotEmpty($message->messageId);
-        $this->assertEquals('me@myself.example', $message->sender);
-        $this->assertEquals(['myself@myself.example'], $message->recipients);
+        $this->assertEquals(new Contact('me@myself.example'), $message->sender);
+        $this->assertEquals([new Contact('myself@myself.example')], $message->recipients);
         $this->assertEquals('Test subject', $message->subject);
         $this->assertEquals('Test body', $message->body);
     }
@@ -293,8 +319,8 @@ class MailhogClientTest extends TestCase
         $message = iterator_to_array($allMessages)[0];
 
         $this->assertNotEmpty($message->messageId);
-        $this->assertEquals('me@myself.example', $message->sender);
-        $this->assertEquals(['myself@myself.example'], $message->recipients);
+        $this->assertEquals(new Contact('me@myself.example'), $message->sender);
+        $this->assertEquals([new Contact('myself@myself.example')], $message->recipients);
         $this->assertEquals('Test subject', $message->subject);
         $this->assertEquals('Hello world', $message->body);
     }

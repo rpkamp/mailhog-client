@@ -11,22 +11,22 @@ class Message
     public $messageId;
 
     /**
-     * @var string
+     * @var Contact
      */
     public $sender;
 
     /**
-     * @var string[]
+     * @var Contact[]
      */
     public $recipients;
 
     /**
-     * @var array
+     * @var Contact[]
      */
     public $ccRecipients;
 
     /**
-     * @var array
+     * @var Contact[]
      */
     public $bccRecipients;
 
@@ -45,9 +45,20 @@ class Message
      */
     public $attachments;
 
+    /**
+     * Message constructor.
+     * @param string $messageId
+     * @param Contact $sender
+     * @param Contact[] $recipients
+     * @param Contact[] $ccRecipients
+     * @param Contact[] $bccRecipients
+     * @param string $subject
+     * @param string $body
+     * @param array $attachments
+     */
     public function __construct(
         string $messageId,
-        string $sender,
+        Contact $sender,
         array $recipients,
         array $ccRecipients,
         array $bccRecipients,

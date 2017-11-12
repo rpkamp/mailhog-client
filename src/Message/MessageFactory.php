@@ -12,7 +12,7 @@ class MessageFactory
             $parts = static::flattenParts($mailhogResponse['MIME']['Parts']);
         }
 
-        $sender = sprintf('%s@%s', $mailhogResponse['From']['Mailbox'], $mailhogResponse['From']['Domain']);
+        $sender = Contact::fromString($mailhogResponse['Content']['Headers']['From'][0]);
 
         $toRecipients = $ccRecipients = $bccRecipients = [];
         if (isset($mailhogResponse['Content']['Headers']['To'][0])) {
@@ -108,6 +108,13 @@ class MessageFactory
 
     private static function parseRecipients(string $recipients): array
     {
-        return array_map('trim', explode(',', $recipients));
+        $recipientsRaw = array_map('trim', str_getcsv($recipients));
+
+        return array_map(
+            function ($recipient) {
+                return Contact::fromString($recipient);
+            },
+            $recipientsRaw
+        );
     }
 }
