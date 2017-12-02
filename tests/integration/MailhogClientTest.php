@@ -8,7 +8,7 @@ use Http\Client\Curl\Client;
 use Http\Message\MessageFactory\GuzzleMessageFactory;
 use PHPUnit\Framework\TestCase;
 use rpkamp\Mailhog\MailhogClient;
-use rpkamp\Mailhog\Message\Attachment;
+use rpkamp\Mailhog\Message\Mime\Attachment;
 use rpkamp\Mailhog\Message\Contact;
 use rpkamp\Mailhog\Message\Message;
 use rpkamp\Mailhog\NoSuchMessageException;
