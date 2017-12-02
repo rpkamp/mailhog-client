@@ -443,4 +443,48 @@ class MailhogClientTest extends TestCase
 
         $this->assertEquals(2, $this->client->getNumberOfMessages());
     }
+
+    /**
+     * @test
+     */
+    public function it_should_decode_quoted_printable_html_messages()
+    {
+        $body = <<<BODY
+<!DOCTYPE html>
+<html>
+<head><title>Hello world</title></head>
+<body><h1>Hello world</h1>If you want to search for things, go to <a href="https://www.google.com/">google</a>.</body>
+</html>
+BODY;
+
+        $message = (new Swift_Message())
+            ->setFrom('me@myself.example')
+            ->setTo('myself@myself.example')
+            ->setSubject('Test subject')
+            ->addPart($body, 'text/html');
+
+        $this->sendMessage($message);
+
+        $message = $this->client->getLastMessage();
+
+        $this->assertEquals(str_replace(PHP_EOL, "\r\n", $body), $message->body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_decode_quoted_printable_text_messages()
+    {
+        $message = (new Swift_Message())
+            ->setFrom('me@myself.example')
+            ->setTo('myself@myself.example')
+            ->setSubject('Test subject')
+            ->addPart('1 + 1 = 2', 'text/plain');
+
+        $this->sendMessage($message);
+
+        $message = $this->client->getLastMessage();
+
+        $this->assertEquals('1 + 1 = 2', $message->body);
+    }
 }

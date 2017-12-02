@@ -34,11 +34,17 @@ class MessageFactory
         foreach ($parts as $part) {
             if (isset($part['Headers']['Content-Type'])) {
                 $contentType = $part['Headers']['Content-Type'][0];
+                $body = $part['Body'];
+                if (isset($part['Headers']['Content-Transfer-Encoding'][0]) &&
+                    false !== stripos($part['Headers']['Content-Transfer-Encoding'][0], 'quoted-printable')
+                ) {
+                    $body = quoted_printable_decode($body);
+                }
                 if (stripos($contentType, 'text/html') === 0) {
-                    return $part['Body'];
+                    return $body;
                 }
                 if (stripos($contentType, 'text/plain') === 0 && stripos($contentType, 'name=') === false) {
-                    $textBody = $part['Body'];
+                    $textBody = $body;
                 }
             }
         }
