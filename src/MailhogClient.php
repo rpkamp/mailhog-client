@@ -30,7 +30,7 @@ class MailhogClient
     {
         $this->httpClient = $client;
         $this->requestFactory = $requestFactory;
-        $this->baseUri = $baseUri;
+        $this->baseUri = rtrim($baseUri, '/');
     }
 
     /**
