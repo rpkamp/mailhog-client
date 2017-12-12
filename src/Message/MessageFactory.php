@@ -21,8 +21,19 @@ class MessageFactory
             $headers['Subject'][0],
             !$mimeParts->isEmpty()
                 ? $mimeParts->getBody()
-                : $mailhogResponse['Content']['Body'],
+                : static::getBodyFrom($mailhogResponse['Content']),
             !$mimeParts->isEmpty() ? $mimeParts->getAttachments() : []
         );
+    }
+
+    private static function getBodyFrom(array $content)
+    {
+        if (isset($content['Headers']['Content-Transfer-Encoding'][0]) &&
+            $content['Headers']['Content-Transfer-Encoding'][0] === 'quoted-printable'
+        ) {
+            return quoted_printable_decode($content['Body']);
+        }
+
+        return $content['Body'];
     }
 }
