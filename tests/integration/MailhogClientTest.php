@@ -473,6 +473,35 @@ BODY;
     /**
      * @test
      */
+    public function it_should_decode_quoted_printable_html_messages_non_mime_part()
+    {
+        $body = <<<BODY
+<!DOCTYPE html>
+<html>
+<head><title>Hello world</title></head>
+<body><h1>Hello world</h1>If you want to search for things, go to <a href="https://www.google.com/">google</a>.</body>
+</html>
+BODY;
+
+        $message = (new Swift_Message())
+            ->setFrom('me@myself.example', 'Myself')
+            ->setTo('me@myself.example')
+            ->setBody($body)
+            ->setSubject('Mailhog extension for Behat');
+
+        $this->sendMessage($message);
+
+        $message = $this->client->getLastMessage();
+
+        $this->assertEquals(
+            str_replace(PHP_EOL, "\r\n", $body),
+            $message->body
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_should_decode_quoted_printable_text_messages()
     {
         $message = (new Swift_Message())
