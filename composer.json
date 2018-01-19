@@ -33,7 +33,7 @@
         "phpmd/phpmd": "^2.0",
         "phpunit/phpunit": "^6.0",
         "php-http/curl-client": "^1.7",
-        "rpkamp/fancy-testdox-printer": "^0.1.1",
+        "rpkamp/fancy-testdox-printer": "^0.2",
         "squizlabs/php_codesniffer": "^3.0",
         "swiftmailer/swiftmailer": "^6.0"
     }
