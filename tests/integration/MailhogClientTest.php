@@ -76,6 +76,21 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
+    public function it_should_handle_message_without_subject_correctly()
+    {
+        $this->sendMessage(
+            $this->createBasicMessage('me@myself.example', 'myself@myself.example', '', 'Test body')
+        );
+
+        /** @var Message $message */
+        $message = iterator_to_array($this->client->findAllMessages())[0];
+
+        $this->assertEquals('', $message->subject);
+    }
+
+    /**
+     * @test
+     */
     public function it_should_find_latest_messages()
     {
         for ($i = 1; $i <= 10; $i++) {
