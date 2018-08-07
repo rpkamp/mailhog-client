@@ -18,7 +18,7 @@ class MessageFactory
             ContactCollection::fromString($headers['To'][0] ?? ''),
             ContactCollection::fromString($headers['Cc'][0] ?? ''),
             ContactCollection::fromString($headers['Bcc'][0] ?? ''),
-            $headers['Subject'][0],
+            isset($headers['Subject'][0]) ? $headers['Subject'][0] : '',
             !$mimeParts->isEmpty()
                 ? $mimeParts->getBody()
                 : static::getBodyFrom($mailhogResponse['Content']),
