@@ -127,6 +127,12 @@ class MailhogClient
             'Email' => $emailAddress,
         ]);
 
+        if (false === $body) {
+            throw new \RuntimeException(
+                sprintf('Unable to JSON encode data to release message %s', $messageId)
+            );
+        }
+
         $request = $this->requestFactory->createRequest(
             'POST',
             sprintf('%s/api/v1/messages/%s/release', $this->baseUri, $messageId),

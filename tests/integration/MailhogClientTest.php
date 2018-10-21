@@ -13,6 +13,7 @@ use rpkamp\Mailhog\Message\Contact;
 use rpkamp\Mailhog\Message\Message;
 use rpkamp\Mailhog\NoSuchMessageException;
 use rpkamp\Mailhog\Tests\MessageTrait;
+use RuntimeException;
 use Swift_Attachment;
 use Swift_ByteStream_FileByteStream;
 use Swift_Message;
@@ -436,13 +437,27 @@ class MailhogClientTest extends TestCase
 
         $this->assertCount(2, $message->attachments);
 
+        $fixture = file_get_contents(__DIR__.'/../Fixtures/lorem-ipsum.txt');
+        if (false === $fixture) {
+            throw new RuntimeException(
+                sprintf('Unable to read "%s"', realpath(__DIR__).'/../Fixtures/lorem-ipsum.txt')
+            );
+        }
+
         $this->assertEquals(
-            new Attachment('lorem-ipsum.txt', 'text/plain', file_get_contents(__DIR__.'/../Fixtures/lorem-ipsum.txt')),
+            new Attachment('lorem-ipsum.txt', 'text/plain', $fixture),
             $message->attachments[0]
         );
 
+        $fixture = file_get_contents(__DIR__ . '/../Fixtures/hog.png');
+        if (false === $fixture) {
+            throw new RuntimeException(
+                sprintf('Unable to read "%s"', realpath(__DIR__).'/../Fixtures/hog.png')
+            );
+        }
+
         $this->assertEquals(
-            new Attachment('hog.png', 'image/png', file_get_contents(__DIR__.'/../Fixtures/hog.png')),
+            new Attachment('hog.png', 'image/png', $fixture),
             $message->attachments[1]
         );
     }
