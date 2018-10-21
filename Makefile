@@ -3,7 +3,7 @@ help:
 	@awk '/^#/{c=substr($$0,3);next}c&&/^[[:alpha:]][[:alnum:]_-]+:/{print substr($$1,1,index($$1,":")),c}1{c=0}' $(MAKEFILE_LIST) | column -s: -t
 
 # Run all tests
-test: lint code-style unit-tests
+test: lint code-style unit-tests phpstan
 
 # Lint all php files
 lint:
@@ -23,5 +23,8 @@ phpcs:
 # Run unit tests
 unit-tests:
 	vendor/bin/phpunit --testdox -v
+
+phpstan:
+	vendor/bin/phpstan analyze --level max src/ tests/
 
 .PHONY: help test lint code-style phpmd phpcs unit-tests

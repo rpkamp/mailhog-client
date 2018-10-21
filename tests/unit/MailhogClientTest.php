@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace unit;
+namespace rpkamp\Mailhog\Tests\unit;
 
 use Http\Client\Curl\Client;
 use Http\Message\MessageFactory\GuzzleMessageFactory;

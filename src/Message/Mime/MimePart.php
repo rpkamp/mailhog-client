@@ -2,6 +2,8 @@
 
 namespace rpkamp\Mailhog\Message\Mime;
 
+use RuntimeException;
+
 class MimePart
 {
     /**
@@ -86,12 +88,18 @@ class MimePart
 
     public function getBody(): string
     {
-        if (false !== stripos($this->contentTransferEncoding, 'quoted-printable')) {
+        if (false !== stripos($this->contentTransferEncoding ?? '', 'quoted-printable')) {
             return quoted_printable_decode($this->body);
         }
 
-        if (false !== stripos($this->contentTransferEncoding, 'base64')) {
-            return base64_decode($this->body);
+        if (false !== stripos($this->contentTransferEncoding ?? '', 'base64')) {
+            $decodedBody = base64_decode($this->body);
+
+            if (false === $decodedBody) {
+                throw new RuntimeException('Unable to decode MimePart');
+            }
+
+            return $decodedBody;
         }
 
         return $this->body;
