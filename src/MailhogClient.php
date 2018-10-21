@@ -46,7 +46,7 @@ class MailhogClient
                     '%s/api/v2/messages?limit=%d&start=%d',
                     $this->baseUri,
                     $limit,
-                    ++$start
+                    $start
                 )
             );
 
@@ -61,6 +61,8 @@ class MailhogClient
             foreach ($allMessageData['items'] as $messageData) {
                 yield MessageFactory::fromMailhogResponse($messageData);
             }
+
+            $start += $limit;
         }
     }
 

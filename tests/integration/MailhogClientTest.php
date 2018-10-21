@@ -136,15 +136,28 @@ class MailhogClientTest extends TestCase
     {
         for ($i = 0; $i < 5; $i++) {
             $this->sendMessage(
-                $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body')
+                $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject '.$i, 'Test body')
             );
         }
 
-        $messages = $this->client->findAllMessages(1);
+        $messages = $this->client->findAllMessages(2);
 
         $this->assertInstanceOf(Generator::class, $messages);
 
-        $this->assertCount(5, iterator_to_array($messages));
+        $messages = iterator_to_array($messages);
+
+        $this->assertCount(5, $messages);
+
+        $allSubjects = \array_map(
+            function (Message $message) {
+                return $message->subject;
+            },
+            $messages
+        );
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->assertContains('Test subject '.$i, $allSubjects);
+        }
     }
 
     /**
