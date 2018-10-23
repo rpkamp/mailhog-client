@@ -19,3 +19,6 @@ branches:
 cache:
   directories:
     - $HOME/.composer/cache/files
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
