@@ -22,9 +22,13 @@ phpcs:
 
 # Run unit tests
 unit-tests:
+ifeq ($(TRAVIS),true)
+	vendor/bin/phpunit --testdox -v --coverage-clover=coverage.xml
+else
 	vendor/bin/phpunit --testdox -v
+endif
 
 phpstan:
 	vendor/bin/phpstan analyze --level max src/ tests/
 
-.PHONY: help test lint code-style phpmd phpcs unit-tests
+.PHONY: help test lint code-style phpmd phpcs unit-tests phpstan
