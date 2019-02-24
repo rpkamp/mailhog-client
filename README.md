@@ -1,4 +1,4 @@
-# Mailhog API Client for PHP [![Build Status](https://travis-ci.org/rpkamp/mailhog-client.svg?branch=master)](https://travis-ci.org/rpkamp/mailhog-client)
+# Mailhog API Client for PHP [![CircleCI](https://circleci.com/gh/rpkamp/mailhog-client/tree/master.svg?style=svg)](https://circleci.com/gh/rpkamp/mailhog-client/tree/master)
 
 A simple PHP (7.1+) client for [Mailhog][mailhog].
 
