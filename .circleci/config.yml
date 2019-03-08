@@ -1,6 +1,8 @@
-version: 2
+version: 2.1
+orbs:
+  codecov: codecov/codecov@1.0.4
 jobs:
-  php7.1:
+  php7-1:
     docker:
       - image: circleci/php:7.1-node-browsers
       - image: mailhog/mailhog:v1.0.0
@@ -18,7 +20,7 @@ jobs:
           key: v1-php7.1-dependencies-{{ checksum "composer.json" }}
       - run: make test
 
-  php7.2:
+  php7-2:
     docker:
       - image: circleci/php:7.2-node-browsers
       - image: mailhog/mailhog:v1.0.0
@@ -35,8 +37,10 @@ jobs:
             - ./vendor
           key: v1-php7.2-dependencies-{{ checksum "composer.json" }}
       - run: make test
+      - codecov/upload:
+          file: coverage.xml
 
-  php7.1-lowest:
+  php7-1-lowest:
     docker:
       - image: circleci/php:7.1-node-browsers
       - image: mailhog/mailhog:v1.0.0
@@ -54,7 +58,7 @@ jobs:
           key: v1-php7.1-lowest-dependencies-{{ checksum "composer.json" }}
       - run: make test
 
-  php7.2-lowest:
+  php7-2-lowest:
     docker:
       - image: circleci/php:7.2-node-browsers
       - image: mailhog/mailhog:v1.0.0
@@ -76,7 +80,7 @@ workflows:
   version: 2
   all:
     jobs:
-      - php7.1
-      - php7.2
-      - php7.1-lowest
-      - php7.2-lowest
+      - php7-1
+      - php7-2
+      - php7-1-lowest
+      - php7-2-lowest

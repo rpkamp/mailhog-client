@@ -22,7 +22,7 @@ phpcs:
 
 # Run unit tests
 unit-tests:
-ifeq ($(TRAVIS),true)
+ifeq ($(CI),true)
 	vendor/bin/phpunit --testdox -v --coverage-clover=coverage.xml
 else
 	vendor/bin/phpunit --testdox -v
