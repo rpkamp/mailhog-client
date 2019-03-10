@@ -12,6 +12,7 @@ use rpkamp\Mailhog\Message\Mime\Attachment;
 use rpkamp\Mailhog\Message\Contact;
 use rpkamp\Mailhog\Message\Message;
 use rpkamp\Mailhog\NoSuchMessageException;
+use rpkamp\Mailhog\Tests\MailhogConfig;
 use rpkamp\Mailhog\Tests\MessageTrait;
 use RuntimeException;
 use Swift_Attachment;
@@ -27,7 +28,7 @@ class MailhogClientTest extends TestCase
      */
     private $client;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->client = new MailhogClient(new Client(), new GuzzleMessageFactory(), $_ENV['mailhog_api_uri']);
         $this->client->purgeMessages();
@@ -36,7 +37,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_return_correct_number_of_messages_in_inbox()
+    public function it_should_return_correct_number_of_messages_in_inbox(): void
     {
         $this->sendDummyMessage();
 
@@ -46,7 +47,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_purge_the_inbox()
+    public function it_should_purge_the_inbox(): void
     {
         $this->sendDummyMessage();
 
@@ -58,7 +59,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_receive_all_message_data()
+    public function it_should_receive_all_message_data(): void
     {
         $this->sendMessage(
             $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body')
@@ -77,7 +78,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_handle_message_without_subject_correctly()
+    public function it_should_handle_message_without_subject_correctly(): void
     {
         $this->sendMessage(
             $this->createBasicMessage('me@myself.example', 'myself@myself.example', '', 'Test body')
@@ -92,7 +93,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_find_latest_messages()
+    public function it_should_find_latest_messages(): void
     {
         for ($i = 1; $i <= 10; $i++) {
             $this->sendDummyMessage();
@@ -104,7 +105,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_find_last_message()
+    public function it_should_find_last_message(): void
     {
         for ($i = 1; $i <= 3; $i++) {
             $this->sendMessage(
@@ -124,7 +125,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_throw_exception_when_there_is_no_last_message()
+    public function it_should_throw_exception_when_there_is_no_last_message(): void
     {
         $this->expectException(NoSuchMessageException::class);
         $this->client->getLastMessage();
@@ -133,7 +134,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_query_mailhog_until_all_messages_have_been_received()
+    public function it_should_query_mailhog_until_all_messages_have_been_received(): void
     {
         for ($i = 0; $i < 5; $i++) {
             $this->sendMessage(
@@ -165,7 +166,7 @@ class MailhogClientTest extends TestCase
      * @test
      * @dataProvider messageProvider
      */
-    public function it_should_receive_single_message_by_id(Swift_Message $messageToSend, array $expectedRecipients)
+    public function it_should_receive_single_message_by_id(Swift_Message $messageToSend, array $expectedRecipients): void
     {
         $this->sendMessage($messageToSend);
 
@@ -184,7 +185,7 @@ class MailhogClientTest extends TestCase
         $this->assertEquals('Test body', $message->body);
     }
 
-    public function messageProvider()
+    public function messageProvider(): array
     {
         $message = $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body');
 
@@ -203,7 +204,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_hydrate_message_with_cc_and_bcc_recipients()
+    public function it_should_hydrate_message_with_cc_and_bcc_recipients(): void
     {
         $messageToSend = (new Swift_Message())
             ->setFrom('me@myself.example')
@@ -253,7 +254,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_hydrate_message_with_bcc_recipients_only()
+    public function it_should_hydrate_message_with_bcc_recipients_only(): void
     {
         $messageToSend = (new Swift_Message())
             ->setFrom('me@myself.example')
@@ -288,7 +289,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_hydrate_names()
+    public function it_should_hydrate_names(): void
     {
         $messageToSend = (new Swift_Message())
             ->setFrom('me@myself.example', 'Me')
@@ -311,7 +312,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_hydrate_message_with_attachment()
+    public function it_should_hydrate_message_with_attachment(): void
     {
         $message = $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body');
         $message->attach(new Swift_Attachment(
@@ -336,7 +337,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_hydrate_message_with_attachment_before_body()
+    public function it_should_hydrate_message_with_attachment_before_body(): void
     {
         $message = (new Swift_Message())
             ->setFrom('me@myself.example')
@@ -366,7 +367,7 @@ class MailhogClientTest extends TestCase
      * @test
      * @dataProvider htmlMessageProvider
      */
-    public function it_should_prefer_html_part_over_plaintext_part(Swift_Message $messageToSend)
+    public function it_should_prefer_html_part_over_plaintext_part(Swift_Message $messageToSend): void
     {
         $this->sendMessage($messageToSend);
 
@@ -377,7 +378,7 @@ class MailhogClientTest extends TestCase
         $this->assertEquals('<h1>Hello world</h1>', $message->body);
     }
 
-    public function htmlMessageProvider()
+    public function htmlMessageProvider(): array
     {
         $message = (new Swift_Message())
             ->setFrom('me@myself.example')
@@ -411,7 +412,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_hydrate_attachments()
+    public function it_should_hydrate_attachments(): void
     {
         $message = (new Swift_Message())
             ->setFrom('me@myself.example')
@@ -465,7 +466,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_throw_exception_when_no_message_found_by_id()
+    public function it_should_throw_exception_when_no_message_found_by_id(): void
     {
         $this->expectException(NoSuchMessageException::class);
         $this->client->getMessageById('123');
@@ -474,7 +475,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_release_a_message()
+    public function it_should_release_a_message(): void
     {
         $this->sendDummyMessage();
 
@@ -482,7 +483,12 @@ class MailhogClientTest extends TestCase
 
         $info = parse_url($_ENV['mailhog_smtp_dsn']);
 
-        $this->client->releaseMessage($message->messageId, $info['host'], $info['port'], 'me@myself.example');
+        $this->client->releaseMessage(
+            $message->messageId,
+            MailhogConfig::getHost(),
+            MailhogConfig::getPort(),
+            'me@myself.example'
+        );
 
         $this->assertEquals(2, $this->client->getNumberOfMessages());
     }
@@ -490,7 +496,7 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_decode_quoted_printable_html_messages()
+    public function it_should_decode_quoted_printable_html_messages(): void
     {
         $body = <<<BODY
 <!DOCTYPE html>
@@ -516,7 +522,7 @@ BODY;
     /**
      * @test
      */
-    public function it_should_decode_quoted_printable_html_messages_non_mime_part()
+    public function it_should_decode_quoted_printable_html_messages_non_mime_part(): void
     {
         $body = <<<BODY
 <!DOCTYPE html>
@@ -545,7 +551,7 @@ BODY;
     /**
      * @test
      */
-    public function it_should_decode_quoted_printable_text_messages()
+    public function it_should_decode_quoted_printable_text_messages(): void
     {
         $message = (new Swift_Message())
             ->setFrom('me@myself.example')
