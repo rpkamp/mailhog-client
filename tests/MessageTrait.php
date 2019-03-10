@@ -1,8 +1,8 @@
 <?php
 
-
 namespace rpkamp\Mailhog\Tests;
 
+use RuntimeException;
 use Swift_Mailer;
 use Swift_Message;
 use Swift_SmtpTransport;
@@ -43,9 +43,7 @@ trait MessageTrait
     private function getMailer(): Swift_Mailer
     {
         if (null === $this->mailer) {
-            $info = parse_url($_ENV['mailhog_smtp_dsn']);
-
-            $this->mailer = new Swift_Mailer(new Swift_SmtpTransport($info['host'], $info['port']));
+            $this->mailer = new Swift_Mailer(new Swift_SmtpTransport(MailhogConfig::getHost(), MailhogConfig::getPort()));
         }
 
         return $this->mailer;

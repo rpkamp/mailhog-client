@@ -12,12 +12,12 @@ class ContactTest extends TestCase
      * @test
      * @dataProvider contactProvider
      */
-    public function it_should_parse_to_email_address_and_name(string $input, Contact $expectedContact)
+    public function it_should_parse_to_email_address_and_name(string $input, Contact $expectedContact): void
     {
         $this->assertEquals($expectedContact, Contact::fromString($input));
     }
 
-    public function contactProvider()
+    public function contactProvider(): array
     {
         return [
             'e-mail address only' => [
@@ -47,12 +47,12 @@ class ContactTest extends TestCase
      * @test
      * @dataProvider sameContactProvider
      */
-    public function it_should_indicate_when_equal_to_other_contact(Contact $contact)
+    public function it_should_indicate_when_equal_to_other_contact(Contact $contact): void
     {
         $this->assertTrue($contact->equals($contact));
     }
 
-    public function sameContactProvider()
+    public function sameContactProvider(): array
     {
         return [
             'e-mail address only' => [new Contact('me@myself.example')],

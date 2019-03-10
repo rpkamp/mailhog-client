@@ -14,7 +14,7 @@ final class MailhogClientTest extends TestCase
     /**
      * @test
      */
-    public function it_should_remove_trailing_slashes_from_base_uri()
+    public function it_should_remove_trailing_slashes_from_base_uri(): void
     {
         $client = new MailhogClient(new Client(), new GuzzleMessageFactory(), 'http://mailhog/');
 
