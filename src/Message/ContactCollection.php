@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace rpkamp\Mailhog\Message;
 
+use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use JakubOnderka\PhpParallelLint\ArrayIterator;
 use Traversable;
 
 class ContactCollection implements Countable, IteratorAggregate
