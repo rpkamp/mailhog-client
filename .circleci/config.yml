@@ -78,7 +78,20 @@ jobs:
 
 workflows:
   version: 2
-  all:
+  commit:
+    jobs:
+      - php7-2
+      - php7-3
+      - php7-2-lowest
+      - php7-3-lowest
+  weekly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * 0"
+          filters:
+            branches:
+              only:
+                - master
     jobs:
       - php7-2
       - php7-3
