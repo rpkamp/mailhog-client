@@ -30,6 +30,15 @@ class Contact
         return new self($contact);
     }
 
+    public static function fromArray(array $contact): Contact
+    {
+        if (isset($contact['Mailbox']) && isset($contact['Domain'])) {
+            return new self($contact['Mailbox'] . '@' . $contact['Domain']);
+        }
+
+        return new self('');
+    }
+
     public function equals(Contact $other): bool
     {
         return $this->emailAddress === $other->emailAddress && $this->name === $other->name;

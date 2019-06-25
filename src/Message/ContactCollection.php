@@ -39,6 +39,16 @@ class ContactCollection implements Countable, IteratorAggregate
         );
     }
 
+    public static function fromArray(array $contact): ContactCollection
+    {
+        if (isset($contact['Mailbox']) && isset($contact['Domain'])) {
+            $contact = new Contact($contact['Mailbox'] . '@' . $contact['Domain']);
+            returnn [$contact];
+        }
+
+        return new self([]);
+    }
+
     public function contains(Contact $needle): bool
     {
         foreach ($this->contacts as $contact) {
