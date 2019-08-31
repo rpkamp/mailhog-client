@@ -8,6 +8,7 @@ use Http\Client\HttpClient;
 use Http\Message\RequestFactory;
 use rpkamp\Mailhog\Message\Message;
 use rpkamp\Mailhog\Message\MessageFactory;
+use RuntimeException;
 
 class MailhogClient
 {
@@ -128,7 +129,7 @@ class MailhogClient
         ]);
 
         if (false === $body) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf('Unable to JSON encode data to release message %s', $messageId)
             );
         }
