@@ -30,8 +30,16 @@ class Contact
         return new self($contact);
     }
 
+    /**
+     * If both contacts have a name, they must be equal. If either or both contacts do not
+     * have a name, then name is ignored and only email address is checked.
+     */
     public function equals(Contact $other): bool
     {
-        return $this->emailAddress === $other->emailAddress && $this->name === $other->name;
+        if (null !== $this->name && null !== $other->name && $this->name !== $other->name) {
+            return false;
+        }
+
+        return $this->emailAddress === $other->emailAddress;
     }
 }

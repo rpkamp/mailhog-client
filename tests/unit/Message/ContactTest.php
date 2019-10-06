@@ -45,18 +45,36 @@ class ContactTest extends TestCase
 
     /**
      * @test
-     * @dataProvider sameContactProvider
      */
-    public function it_should_indicate_when_equal_to_other_contact(Contact $contact): void
+    public function it_should_indicate_when_equal_to_other_contact_based_on_email_address_only(): void
     {
-        $this->assertTrue($contact->equals($contact));
+        $this->assertTrue((new Contact('me@myself.example'))->equals(new Contact('me@myself.example')));
     }
 
-    public function sameContactProvider(): array
+    /**
+     * @test
+     */
+    public function it_should_indicate_when_equal_to_other_contact_when_either_contact_has_no_name(): void
     {
-        return [
-            'e-mail address only' => [new Contact('me@myself.example')],
-            'e-mail address and name' => [new Contact('me@myself.example', 'Me')],
-        ];
+        $this->assertTrue((new Contact('me@myself.example', 'Me'))->equals(new Contact('me@myself.example')));
+        $this->assertTrue((new Contact('me@myself.example'))->equals(new Contact('me@myself.example', 'Me')));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_indicate_when_not_equal_to_each_other_when_names_are_not_equal(): void
+    {
+        $this->assertFalse((new Contact('me@myself.example', 'Me'))->equals(new Contact('me@myself.example', 'Myself')));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_indicate_when_not_equal_to_each_other_when_email_addresses_are_not_equal(): void
+    {
+        $this->assertFalse((new Contact('me@myself.example', 'Me'))->equals(new Contact('someoneelse@myself.example', 'Me')));
+        $this->assertFalse((new Contact('me@myself.example', 'Me'))->equals(new Contact('someoneelse@myself.example')));
+        $this->assertFalse((new Contact('me@myself.example'))->equals(new Contact('someoneelse@myself.example')));
     }
 }
