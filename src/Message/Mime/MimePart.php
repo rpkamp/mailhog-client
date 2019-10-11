@@ -1,8 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace rpkamp\Mailhog\Message\Mime;
 
 use RuntimeException;
+use function base64_decode;
+use function explode;
+use function preg_match;
+use function quoted_printable_decode;
+use function stripos;
 
 class MimePart
 {
@@ -12,7 +18,7 @@ class MimePart
     private $contentType;
 
     /**
-     * @var null|string
+     * @var string|null
      */
     private $contentTransferEncoding;
 
@@ -22,7 +28,7 @@ class MimePart
     private $isAttachment;
 
     /**
-     * @var null|string
+     * @var string|null
      */
     private $filename;
 
@@ -45,6 +51,9 @@ class MimePart
         $this->body = $body;
     }
 
+    /**
+     * @param mixed[] $mimePart
+     */
     public static function fromMailhogResponse(array $mimePart): MimePart
     {
         $filename = null;

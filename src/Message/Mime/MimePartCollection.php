@@ -1,6 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace rpkamp\Mailhog\Message\Mime;
+
+use function array_merge;
+use function count;
+use function stripos;
 
 class MimePartCollection
 {
@@ -9,17 +14,28 @@ class MimePartCollection
      */
     private $mimeParts;
 
+    /**
+     * @param MimePart[] $mimeParts
+     */
     private function __construct(array $mimeParts)
     {
         $this->mimeParts = $mimeParts;
     }
 
-    public static function fromMailhogResponse(array $mimeParts)
+    /**
+     * @param mixed[] $mimeParts
+     */
+    public static function fromMailhogResponse(array $mimeParts): self
     {
         return new self(self::flattenParts($mimeParts));
     }
 
-    protected static function flattenParts(array $mimeParts)
+    /**
+     * @param mixed[] $mimeParts
+     *
+     * @return mixed[]
+     */
+    protected static function flattenParts(array $mimeParts): array
     {
         $flattenedParts = [];
         foreach ($mimeParts as $mimePart) {
@@ -34,11 +50,14 @@ class MimePartCollection
         return $flattenedParts;
     }
 
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return count($this->mimeParts) === 0;
     }
 
+    /**
+     * @return Attachment[]
+     */
     public function getAttachments(): array
     {
         $attachments = [];
@@ -57,18 +76,26 @@ class MimePartCollection
         return $attachments;
     }
 
-    public function getBody()
+    public function getBody(): string
     {
-        $textBody = '';
         foreach ($this->mimeParts as $mimePart) {
+            if ($mimePart->isAttachment()) {
+                continue;
+            }
             if (stripos($mimePart->getContentType(), 'text/html') === 0) {
                 return $mimePart->getBody();
             }
-            if (stripos($mimePart->getContentType(), 'text/plain') === 0 && !$mimePart->isAttachment()) {
-                $textBody = $mimePart->getBody();
+        }
+
+        foreach ($this->mimeParts as $mimePart) {
+            if ($mimePart->isAttachment()) {
+                continue;
+            }
+            if (stripos($mimePart->getContentType(), 'text/plain') === 0) {
+                return $mimePart->getBody();
             }
         }
 
-        return $textBody;
+        return '';
     }
 }

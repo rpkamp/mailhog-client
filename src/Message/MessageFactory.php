@@ -4,9 +4,13 @@ declare(strict_types=1);
 namespace rpkamp\Mailhog\Message;
 
 use rpkamp\Mailhog\Message\Mime\MimePartCollection;
+use function quoted_printable_decode;
 
 class MessageFactory
 {
+    /**
+     * @param mixed[] $mailhogResponse
+     */
     public static function fromMailhogResponse(array $mailhogResponse): Message
     {
         $mimeParts = MimePartCollection::fromMailhogResponse($mailhogResponse['MIME']['Parts'] ?? []);
@@ -26,7 +30,10 @@ class MessageFactory
         );
     }
 
-    private static function getBodyFrom(array $content)
+    /**
+     * @param mixed[] $content
+     */
+    private static function getBodyFrom(array $content): string
     {
         if (isset($content['Headers']['Content-Transfer-Encoding'][0]) &&
             $content['Headers']['Content-Transfer-Encoding'][0] === 'quoted-printable'

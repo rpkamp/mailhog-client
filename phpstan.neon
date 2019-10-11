@@ -1,0 +1,9 @@
+parameters:
+  level: max
+  paths:
+    - src/
+    - tests/
+  ignoreErrors:
+    -
+      message: '~Parameter #8 \$attachments of class rpkamp\\Mailhog\\Message\\Message constructor expects array<rpkamp\\Mailhog\\Message\\Mime\\Attachment>, array<int, stdClass> given\.~'
+      path: tests/unit/Message/MessageTest.php

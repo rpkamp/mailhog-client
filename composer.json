@@ -38,6 +38,7 @@
         "phpstan/phpstan": "^0.11",
         "pdepend/pdepend": "^2.5",
         "maglnet/composer-require-checker": "^2.0",
-        "nyholm/psr7": "^1.2"
+        "nyholm/psr7": "^1.2",
+        "doctrine/coding-standard": "^6.0"
     }
 }

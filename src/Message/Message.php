@@ -5,6 +5,7 @@ namespace rpkamp\Mailhog\Message;
 
 use InvalidArgumentException;
 use rpkamp\Mailhog\Message\Mime\Attachment;
+use function sprintf;
 
 class Message
 {
@@ -48,6 +49,9 @@ class Message
      */
     public $attachments;
 
+    /**
+     * @param Attachment[] $attachments
+     */
     public function __construct(
         string $messageId,
         Contact $sender,
