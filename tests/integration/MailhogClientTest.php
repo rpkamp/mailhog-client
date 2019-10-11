@@ -5,7 +5,6 @@ namespace rpkamp\Mailhog\Tests\integration;
 
 use Generator;
 use Http\Client\Curl\Client;
-use Http\Message\MessageFactory\GuzzleMessageFactory;
 use Nyholm\Psr7\Factory\HttplugFactory;
 use PHPUnit\Framework\TestCase;
 use rpkamp\Mailhog\MailhogClient;
@@ -13,6 +12,12 @@ use rpkamp\Mailhog\Message\Mime\Attachment;
 use rpkamp\Mailhog\Message\Contact;
 use rpkamp\Mailhog\Message\Message;
 use rpkamp\Mailhog\NoSuchMessageException;
+use rpkamp\Mailhog\Specification\AndSpecification;
+use rpkamp\Mailhog\Specification\BodySpecification;
+use rpkamp\Mailhog\Specification\OrSpecification;
+use rpkamp\Mailhog\Specification\SenderSpecification;
+use rpkamp\Mailhog\Specification\Specification;
+use rpkamp\Mailhog\Specification\SubjectSpecification;
 use rpkamp\Mailhog\Tests\MailhogConfig;
 use rpkamp\Mailhog\Tests\MessageTrait;
 use RuntimeException;
@@ -161,6 +166,56 @@ class MailhogClientTest extends TestCase
         for ($i = 0; $i < 5; $i++) {
             $this->assertContains('Test subject '.$i, $allSubjects);
         }
+    }
+
+    /**
+     * @test
+     * @dataProvider specificationProvider
+     */
+    public function it_should_find_messages_that_satisfy_specification(Specification $specification): void
+    {
+        $this->sendMessage(
+            $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'First message', 'Test body')
+        );
+        $this->sendMessage(
+            $this->createBasicMessage('someoneelse@myself.example', 'myself@myself.example', 'Second message', 'Test body')
+        );
+        $this->sendMessage(
+            $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Third message', 'Test body')
+        );
+
+        $messages = $this->client->findMessagesSatisfying($specification);
+
+        $this->assertCount(2, $messages);
+
+        $subjects = array_map(
+            static function (Message $message) {
+                return $message->subject;
+            },
+            $messages
+        );
+
+        $this->assertContains('First message', $subjects);
+        $this->assertContains('Third message', $subjects);
+    }
+
+    public function specificationProvider(): array
+    {
+        return [
+            'sender specification' => [new SenderSpecification(new Contact('me@myself.example'))],
+            'sender and body specification' => [
+                new AndSpecification(
+                    new SenderSpecification(new Contact('me@myself.example')),
+                    new BodySpecification('Test')
+                )
+            ],
+            'subject or other subject specification' => [
+                new OrSpecification(
+                    new SubjectSpecification('First message'),
+                    new SubjectSpecification('Third message')
+                )
+            ]
+        ];
     }
 
     /**

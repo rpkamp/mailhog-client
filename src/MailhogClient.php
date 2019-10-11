@@ -8,6 +8,7 @@ use Http\Client\HttpClient;
 use Http\Message\RequestFactory;
 use rpkamp\Mailhog\Message\Message;
 use rpkamp\Mailhog\Message\MessageFactory;
+use rpkamp\Mailhog\Specification\Specification;
 use RuntimeException;
 
 class MailhogClient
@@ -91,6 +92,19 @@ class MailhogClient
         }
 
         return $messages;
+    }
+
+    /**
+     * @return Message[]
+     */
+    public function findMessagesSatisfying(Specification $specification): array
+    {
+        return array_filter(
+            iterator_to_array($this->findAllMessages()),
+            static function (Message $message) use ($specification) {
+                return $specification->isSatisfiedBy($message);
+            }
+        );
     }
 
     public function getLastMessage(): Message
