@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace rpkamp\Mailhog\Specification;
 
 use rpkamp\Mailhog\Message\Message;
+use function array_slice;
+use function count;
 
 final class AndSpecification implements Specification
 {

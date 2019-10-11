@@ -18,7 +18,7 @@ phpmd:
 
 # Check code adheres to PSR-2
 phpcs:
-	vendor/bin/phpcs --standard=PSR2 src/
+	vendor/bin/phpcs
 
 # Run unit tests
 unit-tests:
@@ -29,7 +29,7 @@ else
 endif
 
 phpstan:
-	vendor/bin/phpstan analyze --level max src/ tests/
+	vendor/bin/phpstan analyze -c phpstan.neon
 
 composer-require-checker:
 	vendor/bin/composer-require-checker

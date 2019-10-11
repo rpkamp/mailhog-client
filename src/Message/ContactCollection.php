@@ -7,6 +7,10 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use Traversable;
+use function array_map;
+use function count;
+use function str_getcsv;
+use function trim;
 
 class ContactCollection implements Countable, IteratorAggregate
 {
@@ -31,7 +35,7 @@ class ContactCollection implements Countable, IteratorAggregate
 
         return new self(
             array_map(
-                function (string $contact) {
+                static function (string $contact) {
                     return Contact::fromString($contact);
                 },
                 array_map('trim', str_getcsv($contacts))
@@ -55,7 +59,7 @@ class ContactCollection implements Countable, IteratorAggregate
         return new ArrayIterator($this->contacts);
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->contacts);
     }

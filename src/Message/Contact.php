@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace rpkamp\Mailhog\Message;
 
+use function preg_match;
+use function stripslashes;
+use function trim;
+
 class Contact
 {
     /**
@@ -11,7 +15,7 @@ class Contact
     public $emailAddress;
 
     /**
-     * @var null|string
+     * @var string|null
      */
     public $name;
 

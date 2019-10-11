@@ -10,6 +10,13 @@ use rpkamp\Mailhog\Message\Message;
 use rpkamp\Mailhog\Message\MessageFactory;
 use rpkamp\Mailhog\Specification\Specification;
 use RuntimeException;
+use function array_filter;
+use function count;
+use function iterator_to_array;
+use function json_decode;
+use function json_encode;
+use function rtrim;
+use function sprintf;
 
 class MailhogClient
 {
@@ -38,7 +45,7 @@ class MailhogClient
     /**
      * @return Generator|Message[]
      */
-    public function findAllMessages(int $limit = 50): Generator
+    public function findAllMessages(int $limit = 50)
     {
         $start = 0;
         while (true) {

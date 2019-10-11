@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace rpkamp\Mailhog\Specification;
 
 use rpkamp\Mailhog\Message\Message;
+use function strpos;
 
 final class BodySpecification implements Specification
 {
