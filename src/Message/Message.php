@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace rpkamp\Mailhog\Message;
 
+use InvalidArgumentException;
+use rpkamp\Mailhog\Message\Mime\Attachment;
+
 class Message
 {
     /**
@@ -41,7 +44,7 @@ class Message
     public $body;
 
     /**
-     * @var array
+     * @var Attachment[]
      */
     public $attachments;
 
@@ -55,6 +58,18 @@ class Message
         string $body,
         array $attachments
     ) {
+        foreach ($attachments as $i => $attachment) {
+            if (!$attachment instanceof Attachment) {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'Element %d of attachments array passed to "%s" was not an instance of "%s"',
+                        $i,
+                        self::class,
+                        Attachment::class
+                    )
+                );
+            }
+        }
         $this->messageId = $messageId;
         $this->sender = $sender;
         $this->recipients = $recipients;
