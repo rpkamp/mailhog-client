@@ -1,4 +1,4 @@
-# Mailhog API Client for PHP [![CircleCI](https://circleci.com/gh/rpkamp/mailhog-client/tree/master.svg?style=svg)](https://circleci.com/gh/rpkamp/mailhog-client/tree/master) [![codecov](https://codecov.io/gh/rpkamp/mailhog-client/branch/master/graph/badge.svg)](https://codecov.io/gh/rpkamp/mailhog-client)
+# Mailhog API Client for PHP [![CircleCI](https://img.shields.io/circleci/project/github/rpkamp/mailhog-client.svg)](https://circleci.com/gh/rpkamp/mailhog-client/tree/master) [![codecov](https://codecov.io/gh/rpkamp/mailhog-client/branch/master/graph/badge.svg)](https://codecov.io/gh/rpkamp/mailhog-client)
 
 A simple PHP (7.2+) client for [Mailhog][mailhog].
 
