@@ -1,89 +1,55 @@
 version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.4
+
 jobs:
-  php7-2:
+  test:
+    parameters:
+      php_version:
+        type: string
+      composer_options:
+        type: string
+        default: ''
     docker:
-      - image: circleci/php:7.2-node-browsers
+      - image: circleci/php:<<parameters.php_version>>
       - image: mailhog/mailhog:v1.0.0
         command: "-api-bind-addr 0.0.0.0:9025 -ui-bind-addr 0.0.0.0:9025 -smtp-bind-addr 0.0.0.0:2025"
-    working_directory: ~/repo
     steps:
       - checkout
       - restore_cache:
           keys:
-          - v1-php7.2-dependencies-{{ checksum "composer.json" }}
-      - run: composer update --prefer-dist
+            - composer-dependencies-<<parameters.php_version>>-<<parameters.composer_options>>-{{ checksum "composer.json" }}
+      - run: COMPOSER_CACHE_DIR=composer-cache composer update --prefer-dist <<parameters.composer_options>>
       - save_cache:
-          paths:
-            - ./vendor
-          key: v1-php7.2-dependencies-{{ checksum "composer.json" }}
-      - run: make test
-
-  php7-3:
-    docker:
-      - image: circleci/php:7.3-node-browsers
-      - image: mailhog/mailhog:v1.0.0
-        command: "-api-bind-addr 0.0.0.0:9025 -ui-bind-addr 0.0.0.0:9025 -smtp-bind-addr 0.0.0.0:2025"
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-php7.3-dependencies-{{ checksum "composer.json" }}
-      - run: composer update --prefer-dist
-      - save_cache:
-          paths:
-            - ./vendor
-          key: v1-php7.3-dependencies-{{ checksum "composer.json" }}
-      - run: make test
-      - codecov/upload:
-          file: coverage.xml
-
-  php7-2-lowest:
-    docker:
-      - image: circleci/php:7.2-node-browsers
-      - image: mailhog/mailhog:v1.0.0
-        command: "-api-bind-addr 0.0.0.0:9025 -ui-bind-addr 0.0.0.0:9025 -smtp-bind-addr 0.0.0.0:2025"
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-php7.2-lowest-dependencies-{{ checksum "composer.json" }}
-      - run: composer update --prefer-dist --prefer-lowest
-      - save_cache:
-          paths:
-            - ./vendor
-          key: v1-php7.2-lowest-dependencies-{{ checksum "composer.json" }}
-      - run: make test
-
-  php7-3-lowest:
-    docker:
-      - image: circleci/php:7.3-node-browsers
-      - image: mailhog/mailhog:v1.0.0
-        command: "-api-bind-addr 0.0.0.0:9025 -ui-bind-addr 0.0.0.0:9025 -smtp-bind-addr 0.0.0.0:2025"
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-php7.3-lowest-dependencies-{{ checksum "composer.json" }}
-      - run: composer update --prefer-dist --prefer-lowest
-      - save_cache:
-          paths:
-            - ./vendor
-          key: v1-php7.3-lowest-dependencies-{{ checksum "composer.json" }}
+          paths: ['./composer-cache']
+          key: composer-dependencies-<<parameters.php_version>>-<<parameters.composer_options>>-{{ checksum "composer.json" }}
       - run: make test
 
 workflows:
   version: 2
   commit:
     jobs:
-      - php7-2
-      - php7-3
-      - php7-2-lowest
-      - php7-3-lowest
+      - test:
+          name: 'PHP 7.2'
+          php_version: '7.2'
+      - test:
+          name: 'PHP 7.3'
+          php_version: '7.3'
+      - test:
+          name: 'PHP 7.4'
+          php_version: '7.4'
+      - test:
+          name: 'PHP 7.2 (lowest composer dependencies)'
+          php_version: '7.2'
+          composer_options: '--prefer-lowest'
+      - test:
+          name: 'PHP 7.3 (lowest composer dependencies)'
+          php_version: '7.3'
+          composer_options: '--prefer-lowest'
+      - test:
+          name: 'PHP 7.4 (lowest composer dependencies)'
+          php_version: '7.4'
+          composer_options: '--prefer-lowest'
   weekly:
     triggers:
       - schedule:
@@ -93,7 +59,24 @@ workflows:
               only:
                 - master
     jobs:
-      - php7-2
-      - php7-3
-      - php7-2-lowest
-      - php7-3-lowest
+      - test:
+          name: 'PHP 7.2'
+          php_version: '7.2'
+      - test:
+          name: 'PHP 7.3'
+          php_version: '7.3'
+      - test:
+          name: 'PHP 7.4'
+          php_version: '7.4'
+      - test:
+          name: 'PHP 7.2 (lowest composer dependencies)'
+          php_version: '7.2'
+          composer_options: '--prefer-lowest'
+      - test:
+          name: 'PHP 7.3 (lowest composer dependencies)'
+          php_version: '7.3'
+          composer_options: '--prefer-lowest'
+      - test:
+          name: 'PHP 7.4 (lowest composer dependencies)'
+          php_version: '7.4'
+          composer_options: '--prefer-lowest'
