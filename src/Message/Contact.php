@@ -27,6 +27,7 @@ class Contact
 
     public static function fromString(string $contact): Contact
     {
+        $matches = [];
         if (preg_match('~^(?P<name>.*?)\s+<(?P<email>\S*?)>$~i', $contact, $matches)) {
             return new self($matches['email'], stripslashes(trim($matches['name'])));
         }
