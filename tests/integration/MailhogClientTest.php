@@ -139,6 +139,7 @@ class MailhogClientTest extends TestCase
 
     /**
      * @test
+     * @dataProvider limitProvider
      */
     public function it_should_query_mailhog_until_all_messages_have_been_received(): void
     {
@@ -166,6 +167,16 @@ class MailhogClientTest extends TestCase
         for ($i = 0; $i < 5; $i++) {
             $this->assertContains('Test subject '.$i, $allSubjects);
         }
+    }
+
+    public function limitProvider(): array
+    {
+        return [
+            'one by one' => [1],
+            'limit less than total' => [2],
+            'limit equal to total' => [5],
+            'limit more than total' => [10],
+        ];
     }
 
     /**
