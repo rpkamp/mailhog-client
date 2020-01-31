@@ -60,6 +60,7 @@ class MimePart
         if (isset($mimePart['Headers']['Content-Disposition'][0]) &&
             stripos($mimePart['Headers']['Content-Disposition'][0], 'attachment') === 0
         ) {
+            $matches = [];
             preg_match('~filename=(?P<filename>.*?)(;|$)~i', $mimePart['Headers']['Content-Disposition'][0], $matches);
             $filename = $matches['filename'];
         }

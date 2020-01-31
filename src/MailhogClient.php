@@ -63,15 +63,15 @@ class MailhogClient
 
             $allMessageData = json_decode($response->getBody()->getContents(), true);
 
-            if (0 === $allMessageData['count']) {
-                return; // all done!
-            }
-
             foreach ($allMessageData['items'] as $messageData) {
                 yield MessageFactory::fromMailhogResponse($messageData);
             }
 
             $start += $limit;
+
+            if ($start >= $allMessageData['total']) {
+                return;
+            }
         }
     }
 
