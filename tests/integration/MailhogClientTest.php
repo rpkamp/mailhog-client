@@ -169,6 +169,9 @@ class MailhogClientTest extends TestCase
         }
     }
 
+    /**
+     * @return array<string, int[]>
+     */
     public function limitProvider(): array
     {
         return [
@@ -210,6 +213,9 @@ class MailhogClientTest extends TestCase
         $this->assertContains('Third message', $subjects);
     }
 
+    /**
+     * @return array<string, array{Specification}>
+     */
     public function specificationProvider(): array
     {
         return [
@@ -231,6 +237,7 @@ class MailhogClientTest extends TestCase
 
     /**
      * @test
+     * @param Contact[] $expectedRecipients
      * @dataProvider messageProvider
      */
     public function it_should_receive_single_message_by_id(Swift_Message $messageToSend, array $expectedRecipients): void
@@ -252,6 +259,9 @@ class MailhogClientTest extends TestCase
         $this->assertEquals('Test body', $message->body);
     }
 
+    /**
+     * @return array<string, array{Swift_Message, Contact[]}>
+     */
     public function messageProvider(): array
     {
         $message = $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body');
@@ -445,6 +455,9 @@ class MailhogClientTest extends TestCase
         $this->assertEquals('<h1>Hello world</h1>', $message->body);
     }
 
+    /**
+     * @return array<string, Swift_Message[]>
+     */
     public function htmlMessageProvider(): array
     {
         $message = (new Swift_Message())

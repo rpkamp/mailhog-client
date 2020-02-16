@@ -12,6 +12,9 @@ use function count;
 use function str_getcsv;
 use function trim;
 
+/**
+ * @implements IteratorAggregate<int, Contact>
+ */
 class ContactCollection implements Countable, IteratorAggregate
 {
     /**

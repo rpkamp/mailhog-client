@@ -28,6 +28,9 @@ class OrSpecificationTest extends TestCase
         $this->assertFalse((new OrSpecification(new NeverSatisfied(), new NeverSatisfied()))->isSatisfiedBy(MessageFactory::dummy()));
     }
 
+    /**
+     * @return array<string, array{OrSpecification}>
+     */
     public function satisfiedOrSpecificationsProvider(): array
     {
         return [

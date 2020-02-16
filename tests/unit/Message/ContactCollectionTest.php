@@ -11,6 +11,7 @@ class ContactCollectionTest extends TestCase
 {
     /**
      * @test
+     * @param Contact[] $expectedContacts
      * @dataProvider contactsProvider
      */
     public function it_should_parse_contacts_from_string(string $contacts, array $expectedContacts): void
@@ -22,6 +23,9 @@ class ContactCollectionTest extends TestCase
         }
     }
 
+    /**
+     * @return array<string, array{string, Contact[]}>
+     */
     public function contactsProvider(): array
     {
         return [
@@ -72,6 +76,9 @@ class ContactCollectionTest extends TestCase
         $this->assertTrue($collection->contains($instantiate));
     }
 
+    /**
+     * @return array<string, array{Contact, Contact}>
+     */
     public function equalContactsProvider(): array
     {
         return [
@@ -91,6 +98,9 @@ class ContactCollectionTest extends TestCase
         $this->assertFalse($collection->contains($verify));
     }
 
+    /**
+     * @return array<string, array{Contact, Contact}>
+     */
     public function nonEqualContactsProvider(): array
     {
         return [

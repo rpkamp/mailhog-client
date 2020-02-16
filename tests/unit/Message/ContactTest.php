@@ -17,6 +17,9 @@ class ContactTest extends TestCase
         $this->assertEquals($expectedContact, Contact::fromString($input));
     }
 
+    /**
+     * @return array<string, array{string, Contact}>
+     */
     public function contactProvider(): array
     {
         return [
