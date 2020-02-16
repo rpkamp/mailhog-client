@@ -82,6 +82,7 @@ class MimePartCollection
             if ($mimePart->isAttachment()) {
                 continue;
             }
+
             if (stripos($mimePart->getContentType(), 'text/html') === 0) {
                 return $mimePart->getBody();
             }
@@ -91,6 +92,7 @@ class MimePartCollection
             if ($mimePart->isAttachment()) {
                 continue;
             }
+
             if (stripos($mimePart->getContentType(), 'text/plain') === 0) {
                 return $mimePart->getBody();
             }

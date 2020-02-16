@@ -57,6 +57,9 @@ class ContactCollection implements Countable, IteratorAggregate
         return false;
     }
 
+    /**
+     * @return Traversable<Contact>
+     */
     public function getIterator(): Traversable
     {
         return new ArrayIterator($this->contacts);
