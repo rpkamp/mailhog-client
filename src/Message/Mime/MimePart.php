@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace rpkamp\Mailhog\Message\Mime;
 
-use RuntimeException;
 use function base64_decode;
 use function explode;
 use function preg_match;
@@ -103,13 +102,7 @@ class MimePart
         }
 
         if (false !== stripos($this->contentTransferEncoding ?? '', 'base64')) {
-            $decodedBody = base64_decode($this->body);
-
-            if (false === $decodedBody) {
-                throw new RuntimeException('Unable to decode MimePart');
-            }
-
-            return $decodedBody;
+            return base64_decode($this->body);
         }
 
         return $this->body;

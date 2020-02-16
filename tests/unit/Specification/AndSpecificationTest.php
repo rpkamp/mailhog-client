@@ -30,6 +30,9 @@ class AndSpecificationTest extends TestCase
         $this->assertFalse($specification->isSatisfiedBy(MessageFactory::dummy()));
     }
 
+    /**
+     * @return array<string, array{AndSpecification}>
+     */
     public function nonSatisfiedAndSpecificationsProvider(): array
     {
         return [
