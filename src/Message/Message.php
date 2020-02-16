@@ -74,6 +74,7 @@ class Message
                 );
             }
         }
+
         $this->messageId = $messageId;
         $this->sender = $sender;
         $this->recipients = $recipients;
