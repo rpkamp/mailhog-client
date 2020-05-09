@@ -134,6 +134,13 @@ class MailhogClient
         return json_decode($response->getBody()->getContents(), true)['total'];
     }
 
+    public function deleteMessage(string $messageId): void
+    {
+        $request = $this->requestFactory->createRequest('DELETE', sprintf('%s/api/v1/messages/%s', $this->baseUri, $messageId));
+
+        $this->httpClient->sendRequest($request);
+    }
+
     public function purgeMessages(): void
     {
         $request = $this->requestFactory->createRequest('DELETE', sprintf('%s/api/v1/messages', $this->baseUri));
