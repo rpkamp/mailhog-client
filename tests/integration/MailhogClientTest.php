@@ -53,6 +53,20 @@ class MailhogClientTest extends TestCase
     /**
      * @test
      */
+    public function it_should_delete_the_message(): void
+    {
+        $this->sendDummyMessage();
+
+        $message = $this->client->getLastMessage();
+
+        $this->client->deleteMessage($message->messageId);
+
+        $this->assertEquals(0, $this->client->getNumberOfMessages());
+    }
+
+    /**
+     * @test
+     */
     public function it_should_purge_the_inbox(): void
     {
         $this->sendDummyMessage();
