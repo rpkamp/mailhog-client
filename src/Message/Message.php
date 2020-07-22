@@ -50,7 +50,13 @@ class Message
     public $attachments;
 
     /**
-     * @param Attachment[] $attachments
+     * @var array<string, array<int, string>>|null
+     */
+    public $headers;
+
+    /**
+     * @param Attachment[]                           $attachments
+     * @param array<string, array<int, string>>|null $headers
      */
     public function __construct(
         string $messageId,
@@ -60,7 +66,8 @@ class Message
         ContactCollection $bccRecipients,
         string $subject,
         string $body,
-        array $attachments
+        array $attachments,
+        ?array $headers = []
     ) {
         foreach ($attachments as $i => $attachment) {
             if (!$attachment instanceof Attachment) {
@@ -83,5 +90,6 @@ class Message
         $this->subject = $subject;
         $this->body = $body;
         $this->attachments = $attachments;
+        $this->headers = $headers;
     }
 }
