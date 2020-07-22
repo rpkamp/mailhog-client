@@ -26,7 +26,8 @@ class MessageFactory
             !$mimeParts->isEmpty()
                 ? $mimeParts->getBody()
                 : static::getBodyFrom($mailhogResponse['Content']),
-            !$mimeParts->isEmpty() ? $mimeParts->getAttachments() : []
+            !$mimeParts->isEmpty() ? $mimeParts->getAttachments() : [],
+            $headers
         );
     }
 
