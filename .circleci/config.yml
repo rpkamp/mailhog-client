@@ -15,12 +15,14 @@ jobs:
       - image: mailhog/mailhog:v1.0.0
         command: "-api-bind-addr 0.0.0.0:9025 -ui-bind-addr 0.0.0.0:9025 -smtp-bind-addr 0.0.0.0:2025"
     steps:
+      - run:
+          command: sudo composer self-update --snapshot --no-interaction
       - checkout
       - restore_cache:
           keys:
             - composer-dependencies-<<parameters.php_version>>-<<parameters.composer_options>>-{{ checksum "composer.json" }}
       - run:
-          command: COMPOSER_CACHE_DIR=composer-cache composer update --prefer-dist <<parameters.composer_options>>
+          command: COMPOSER_CACHE_DIR=composer-cache composer update --prefer-dist --no-interaction <<parameters.composer_options>>
           no_output_timeout: 30m
       - save_cache:
           paths: ['./composer-cache']
