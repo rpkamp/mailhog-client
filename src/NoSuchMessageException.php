@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace rpkamp\Mailhog;
 
 use RuntimeException;
+
 use function sprintf;
 
 class NoSuchMessageException extends RuntimeException

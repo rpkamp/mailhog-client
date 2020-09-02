@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace rpkamp\Mailhog\Message;
 
 use rpkamp\Mailhog\Message\Mime\MimePartCollection;
+
 use function quoted_printable_decode;
 
 class MessageFactory
@@ -35,7 +36,8 @@ class MessageFactory
      */
     private static function getBodyFrom(array $content): string
     {
-        if (isset($content['Headers']['Content-Transfer-Encoding'][0]) &&
+        if (
+            isset($content['Headers']['Content-Transfer-Encoding'][0]) &&
             $content['Headers']['Content-Transfer-Encoding'][0] === 'quoted-printable'
         ) {
             return quoted_printable_decode($content['Body']);
