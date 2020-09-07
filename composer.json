@@ -23,6 +23,7 @@
     "require": {
         "php": "^7.2",
 	    "ext-json": "*",
+        "ext-iconv": "*",
         "php-http/client-implementation": "^1.0",
         "php-http/httplug": "^1.0|^2.0",
         "php-http/message-factory": "^1.0",
@@ -30,7 +31,7 @@
     },
     "require-dev": {
         "jakub-onderka/php-parallel-lint": "^1.0",
-        "phpmd/phpmd": "^2.1.2",
+        "phpmd/phpmd": "~2.8.0",
         "phpunit/phpunit": "^8.0",
         "php-http/curl-client": "^2.0",
         "swiftmailer/swiftmailer": "^6.2",

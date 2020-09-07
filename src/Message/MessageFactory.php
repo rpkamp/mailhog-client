@@ -14,33 +14,28 @@ class MessageFactory
     public static function fromMailhogResponse(array $mailhogResponse): Message
     {
         $mimeParts = MimePartCollection::fromMailhogResponse($mailhogResponse['MIME']['Parts'] ?? []);
-        $headers = $mailhogResponse['Content']['Headers'];
+        $headers = Headers::fromMailhogResponse($mailhogResponse);
 
         return new Message(
             $mailhogResponse['ID'],
-            Contact::fromString($headers['From'][0]),
-            ContactCollection::fromString($headers['To'][0] ?? ''),
-            ContactCollection::fromString($headers['Cc'][0] ?? ''),
-            ContactCollection::fromString($headers['Bcc'][0] ?? ''),
-            $headers['Subject'][0] ?? '',
+            Contact::fromString($headers->get('From')),
+            ContactCollection::fromString($headers->get('To', '')),
+            ContactCollection::fromString($headers->get('Cc', '')),
+            ContactCollection::fromString($headers->get('Bcc', '')),
+            $headers->get('Subject', ''),
             !$mimeParts->isEmpty()
                 ? $mimeParts->getBody()
-                : static::getBodyFrom($mailhogResponse['Content']),
+                : static::decodeBody($headers, $mailhogResponse['Content']['Body']),
             !$mimeParts->isEmpty() ? $mimeParts->getAttachments() : []
         );
     }
 
-    /**
-     * @param mixed[] $content
-     */
-    private static function getBodyFrom(array $content): string
+    private static function decodeBody(Headers $headers, string $body): string
     {
-        if (isset($content['Headers']['Content-Transfer-Encoding'][0]) &&
-            $content['Headers']['Content-Transfer-Encoding'][0] === 'quoted-printable'
-        ) {
-            return quoted_printable_decode($content['Body']);
+        if ($headers->get('Content-Transfer-Encoding') === 'quoted-printable') {
+            return quoted_printable_decode($body);
         }
 
-        return $content['Body'];
+        return $body;
     }
 }
