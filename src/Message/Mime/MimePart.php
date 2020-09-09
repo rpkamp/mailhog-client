@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace rpkamp\Mailhog\Message\Mime;
 
+use rpkamp\Mailhog\Message\Headers;
 use function base64_decode;
 use function explode;
 use function preg_match;
@@ -55,25 +56,29 @@ class MimePart
      */
     public static function fromMailhogResponse(array $mimePart): MimePart
     {
+        $headers = Headers::fromMimePart($mimePart);
+
         $filename = null;
-        if (isset($mimePart['Headers']['Content-Disposition'][0]) &&
-            stripos($mimePart['Headers']['Content-Disposition'][0], 'attachment') === 0
+        if ($headers->has('Content-Disposition') &&
+            stripos($headers->get('Content-Disposition'), 'attachment') === 0
         ) {
             $matches = [];
-            preg_match('~filename=(?P<filename>.*?)(;|$)~i', $mimePart['Headers']['Content-Disposition'][0], $matches);
+            preg_match('~filename=(?P<filename>.*?)(;|$)~i', $headers->get('Content-Disposition'), $matches);
             $filename = $matches['filename'];
         }
 
         $isAttachment = false;
-        if (isset($mimePart['Headers']['Content-Disposition'][0])) {
-            $isAttachment = stripos($mimePart['Headers']['Content-Disposition'][0], 'attachment') === 0;
+        if ($headers->has('Content-Disposition')) {
+            $isAttachment = stripos($headers->get('Content-Disposition'), 'attachment') === 0;
         }
 
         return new self(
-            isset($mimePart['Headers']['Content-Type'][0])
-                ? explode(';', $mimePart['Headers']['Content-Type'][0])[0]
+            $headers->has('Content-Type')
+                ? explode(';', $headers->get('Content-Type'))[0]
                 : 'application/octet-stream',
-            $mimePart['Headers']['Content-Transfer-Encoding'][0] ?? null,
+            $headers->has('Content-Transfer-Encoding')
+                ? $headers->get('Content-Transfer-Encoding')
+                : null,
             $isAttachment,
             $filename,
             $mimePart['Body']

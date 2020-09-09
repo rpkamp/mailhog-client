@@ -1,0 +1,78 @@
+{
+  "total":1,
+  "count":1,
+  "start":0,
+  "items":[
+    {
+      "ID":"1SepfeC9XRP7xKMDmPfczx8k3ktwjh605ZVatm4L9ew=@mailhog.example",
+      "From":{
+        "Relays":null,
+        "Mailbox":"no-reply",
+        "Domain":"myself.example",
+        "Params":""
+      },
+      "To":[
+        {
+          "Relays":null,
+          "Mailbox":"jose",
+          "Domain":"myself.example",
+          "Params":""
+        },
+        {
+          "Relays":null,
+          "Mailbox":"leticia",
+          "Domain":"myself.example",
+          "Params":""
+        }
+      ],
+      "Content":{
+        "Headers":{
+          "Content-Transfer-Encoding":[
+            "quoted-printable"
+          ],
+          "Content-Type":[
+            "text/html; charset=utf-8"
+          ],
+          "Date":[
+            "Sun, 06 Sep 2020 15:24:56 -0300"
+          ],
+          "From":[
+            "=?utf-8?Q?Jos=C3=A9?= de tal \u003cno-reply@myself.example\u003e"
+          ],
+          "MIME-Version":[
+            "1.0"
+          ],
+          "Message-ID":[
+            "\u003c3f91997768d3c98ab3e19cebb5a731f8@swift.generated\u003e"
+          ],
+          "Received":[
+            "from [127.0.0.1] by mailhog.example (MailHog)\r\n          id 1SepfeC9XRP7xKMDmPfczx8k3ktwjh605ZVatm4L9ew=@mailhog.example; Sun, 06 Sep 2020 18:24:56 +0000"
+          ],
+          "Return-Path":[
+            "\u003cno-reply@myself.example\u003e"
+          ],
+          "Subject":[
+            "Mailhog =?utf-8?Q?=C3=A9?= muito bom mesmo: =?utf-8?Q?=F0=9F=98=81?="
+          ],
+          "To":[
+            "=?utf-8?Q?Jos=C3=A9?= \u003cjose@myself.example\u003e, =?utf-8?Q?Let=C3=ADcia_maranh=C3=A3o?= \u003cleticia@myself.example\u003e"
+          ]
+        },
+        "Body":"foobar",
+        "Size":474,
+        "MIME":null
+      },
+      "Created":"2020-09-06T18:24:56.58754722Z",
+      "MIME":null,
+      "Raw":{
+        "From":"no-reply@myself.example",
+        "To":[
+          "jose@myself.example",
+          "leticia@myself.example"
+        ],
+        "Data":"Message-ID: \u003c3f91997768d3c98ab3e19cebb5a731f8@swift.generated\u003e\r\nDate: Sun, 06 Sep 2020 15:24:56 -0300\r\nSubject: Mailhog =?utf-8?Q?=C3=A9?= muito bom mesmo:\r\n =?utf-8?Q?=F0=9F=98=81?=\r\nFrom: =?utf-8?Q?Jos=C3=A9?= de tal \u003cno-reply@myself.example\u003e\r\nTo: =?utf-8?Q?Jos=C3=A9?= \u003cjose@myself.example\u003e,\r\n =?utf-8?Q?Let=C3=ADcia_maranh=C3=A3o?= \u003cleticia@myself.example\u003e\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=utf-8\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\nfoobar",
+        "Helo":"[127.0.0.1]"
+      }
+    }
+  ]
+}
