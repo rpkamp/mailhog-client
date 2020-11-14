@@ -31,7 +31,7 @@
     "require-dev": {
         "jakub-onderka/php-parallel-lint": "^1.0",
         "phpmd/phpmd": "^2.1.2",
-        "phpunit/phpunit": "^8.0",
+        "phpunit/phpunit": "^9.0",
         "php-http/curl-client": "^2.0",
         "swiftmailer/swiftmailer": "^6.2",
         "phpstan/phpstan": "^0.12",
