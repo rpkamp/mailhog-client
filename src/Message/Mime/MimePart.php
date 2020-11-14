@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace rpkamp\Mailhog\Message\Mime;
 
 use rpkamp\Mailhog\Message\Headers;
+
 use function base64_decode;
 use function explode;
 use function preg_match;
@@ -59,7 +60,8 @@ class MimePart
         $headers = Headers::fromMimePart($mimePart);
 
         $filename = null;
-        if ($headers->has('Content-Disposition') &&
+        if (
+            $headers->has('Content-Disposition') &&
             stripos($headers->get('Content-Disposition'), 'attachment') === 0
         ) {
             $matches = [];
