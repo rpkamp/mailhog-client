@@ -10,6 +10,7 @@ use rpkamp\Mailhog\Message\Message;
 use rpkamp\Mailhog\Message\MessageFactory;
 use rpkamp\Mailhog\Specification\Specification;
 use RuntimeException;
+
 use function array_filter;
 use function count;
 use function iterator_to_array;

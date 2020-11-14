@@ -5,6 +5,7 @@ namespace rpkamp\Mailhog\Message;
 
 use InvalidArgumentException;
 use rpkamp\Mailhog\Message\Mime\Attachment;
+
 use function sprintf;
 
 class Message

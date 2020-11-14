@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace rpkamp\Mailhog\Message;
 
 use rpkamp\Mailhog\Message\Mime\MimePartCollection;
+
 use function quoted_printable_decode;
 
 class MessageFactory
