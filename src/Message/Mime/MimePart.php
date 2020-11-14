@@ -56,7 +56,8 @@ class MimePart
     public static function fromMailhogResponse(array $mimePart): MimePart
     {
         $filename = null;
-        if (isset($mimePart['Headers']['Content-Disposition'][0]) &&
+        if (
+            isset($mimePart['Headers']['Content-Disposition'][0]) &&
             stripos($mimePart['Headers']['Content-Disposition'][0], 'attachment') === 0
         ) {
             $matches = [];
