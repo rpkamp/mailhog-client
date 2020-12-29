@@ -19,7 +19,7 @@ jobs:
         ports:
           - 2025:2025
           - 9025:9025
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     name: Test
     strategy:
       fail-fast: false
