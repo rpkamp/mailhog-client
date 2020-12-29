@@ -24,24 +24,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [7.2, 7.3, 7.4]
-        composer-flags: [""]
-        stability: ["stable"]
-        continue-on-composer-error: [""]
-        include:
-          - php: 7.2
-            composer-flags: --prefer-lowest
-          - php: 7.3
-            composer-flags: --prefer-lowest
-          - php: 7.4
-            composer-flags: --prefer-lowest
-          - php: 8.0
-            stability: "dev"
-            continue-on-composer-error: true
-          - php: 8.0
-            stability: "dev"
-            composer-flags: --prefer-lowest
-            continue-on-composer-error: true
+        php: ["7.2", "7.3", "7.4", "8.0"]
+        composer-flags: ["", "--prefer-lowest"]
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
@@ -54,15 +38,9 @@ jobs:
         with:
           php-version: "${{ matrix.php }}"
 
-      - name: Update the minimum stability
-        if: matrix.stability == 'dev'
-        run: composer config minimum-stability ${{ matrix.stability }}
-
       - name: Install dependencies
-        id: composer-run
-        continue-on-error: ${{ matrix.continue-on-composer-error }}
         run: composer update ${{ matrix.composer-flags }}
 
       - name: Run tests
-        if: steps.composer-run.outcome == 'success' && steps.composer-run.conclusion == 'success'
         run: make test
+
