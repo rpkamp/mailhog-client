@@ -22,7 +22,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": "^7.2 || ^8.0",
-	    "ext-json": "*",
+        "ext-json": "*",
         "ext-iconv": "*",
         "php-http/client-implementation": "^1.0",
         "php-http/httplug": "^1.0|^2.0",
@@ -36,7 +36,6 @@
         "swiftmailer/swiftmailer": "^6.2.3",
         "phpstan/phpstan": "^0.12",
         "pdepend/pdepend": "^2.5",
-        "maglnet/composer-require-checker": "^2.0",
         "nyholm/psr7": "^1.2",
         "doctrine/coding-standard": "^8.0",
         "php-parallel-lint/php-parallel-lint": "^1.2",
