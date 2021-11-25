@@ -25,19 +25,9 @@ final class HeaderSpecification implements Specification
 
     public function isSatisfiedBy(Message $message): bool
     {
-        foreach ($message->headers ?? [] as $name => $values) {
-            foreach ($values as $value) {
-                if ($name === $this->headerName
-                    && (
-                        $this->headerValue === null
-                        || $value === $this->headerValue
-                    )
-                ) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return
+            $this->headerValue
+            ? $message->headers->get($this->headerName) === $this->headerValue
+            : $message->headers->has($this->headerName);
     }
 }

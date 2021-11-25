@@ -57,7 +57,7 @@ class Message
 
     /**
      * @param Attachment[]                           $attachments
-     * @param array<string, array<int, string>>|null $headers
+     * @param \rpkamp\Mailhog\Message\Headers        $headers
      */
     public function __construct(
         string $messageId,
@@ -68,7 +68,7 @@ class Message
         string $subject,
         string $body,
         array $attachments,
-        ?array $headers = []
+        Headers $headers
     ) {
         foreach ($attachments as $i => $attachment) {
             if (!$attachment instanceof Attachment) {
