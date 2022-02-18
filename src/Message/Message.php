@@ -51,13 +51,12 @@ class Message
     public $attachments;
 
     /**
-     * @var array<string, array<int, string>>|null
+     * @var Headers
      */
     public $headers;
 
     /**
-     * @param Attachment[]                           $attachments
-     * @param \rpkamp\Mailhog\Message\Headers        $headers
+     * @param Attachment[] $attachments
      */
     public function __construct(
         string $messageId,

@@ -25,8 +25,7 @@ final class HeaderSpecification implements Specification
 
     public function isSatisfiedBy(Message $message): bool
     {
-        return
-            $this->headerValue
+        return $this->headerValue
             ? $message->headers->get($this->headerName) === $this->headerValue
             : $message->headers->has($this->headerName);
     }

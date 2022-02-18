@@ -6,6 +6,7 @@ namespace rpkamp\Mailhog\Tests\unit\Message;
 use InvalidArgumentException;
 use rpkamp\Mailhog\Message\Contact;
 use rpkamp\Mailhog\Message\ContactCollection;
+use rpkamp\Mailhog\Message\Headers;
 use rpkamp\Mailhog\Message\Message;
 use PHPUnit\Framework\TestCase;
 use rpkamp\Mailhog\Message\Mime\Attachment;
@@ -22,6 +23,7 @@ final class MessageTest extends TestCase
         $attachments = [
             new Attachment('lorem-ipsum.text', 'text/plain', 'Lorem ipsum dolor sit amet!')
         ];
+        $headers = new Headers(['foo' => 'bar']);
 
         $message = new Message(
             '123',
@@ -31,7 +33,8 @@ final class MessageTest extends TestCase
             new ContactCollection([new Contact('bcc@myself.example')]),
             'Heya',
             'Hello there!',
-            $attachments
+            $attachments,
+            $headers
         );
 
         $this->assertEquals('123', $message->messageId);
@@ -42,6 +45,7 @@ final class MessageTest extends TestCase
         $this->assertEquals('Heya', $message->subject);
         $this->assertEquals('Hello there!', $message->body);
         $this->assertEquals($attachments, $message->attachments);
+        $this->assertEquals($headers, $message->headers);
     }
 
     /**
@@ -58,7 +62,8 @@ final class MessageTest extends TestCase
             new ContactCollection([new Contact('bcc@myself.example')]),
             'Heya',
             'Hello there!',
-            [new stdClass()]
+            [new stdClass()],
+            new Headers([])
         );
     }
 }
