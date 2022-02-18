@@ -2,15 +2,15 @@
 
 namespace rpkamp\Mailhog\Tests;
 
-use RuntimeException;
-use Swift_Mailer;
-use Swift_Message;
-use Swift_SmtpTransport;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mime\Email;
 
 trait MessageTrait
 {
     /**
-     * @var Swift_Mailer
+     * @var MailerInterface
      */
     private $mailer;
 
@@ -21,29 +21,29 @@ trait MessageTrait
         );
     }
 
-    public function createDummyMessage(): Swift_Message
+    public function createDummyMessage(): Email
     {
         return $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Hello', 'How are you?');
     }
 
-    public function createBasicMessage(string $from, string $to, string $subject, string $body): Swift_Message
+    public function createBasicMessage(string $from, string $to, string $subject, string $body): Email
     {
-        return (new Swift_Message())
-            ->setFrom($from)
-            ->setTo($to)
-            ->setSubject($subject)
-            ->setBody($body);
+        return (new Email())
+            ->from($from)
+            ->to($to)
+            ->subject($subject)
+            ->text($body);
     }
 
-    public function sendMessage(Swift_Message $message): void
+    public function sendMessage(Email $message): void
     {
         $this->getMailer()->send($message);
     }
 
-    private function getMailer(): Swift_Mailer
+    private function getMailer(): MailerInterface
     {
         if (null === $this->mailer) {
-            $this->mailer = new Swift_Mailer(new Swift_SmtpTransport(MailhogConfig::getHost(), MailhogConfig::getPort()));
+            $this->mailer = new Mailer(Transport::fromDsn($_ENV['mailhog_smtp_dsn']));
         }
 
         return $this->mailer;
