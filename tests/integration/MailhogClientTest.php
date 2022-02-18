@@ -21,9 +21,8 @@ use rpkamp\Mailhog\Specification\SubjectSpecification;
 use rpkamp\Mailhog\Tests\MailhogConfig;
 use rpkamp\Mailhog\Tests\MessageTrait;
 use RuntimeException;
-use Swift_Attachment;
-use Swift_ByteStream_FileByteStream;
-use Swift_Message;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 
 class MailhogClientTest extends TestCase
 {
@@ -254,7 +253,7 @@ class MailhogClientTest extends TestCase
      * @param Contact[] $expectedRecipients
      * @dataProvider messageProvider
      */
-    public function it_should_receive_single_message_by_id(Swift_Message $messageToSend, array $expectedRecipients): void
+    public function it_should_receive_single_message_by_id(Email $messageToSend, array $expectedRecipients): void
     {
         $this->sendMessage($messageToSend);
 
@@ -274,7 +273,7 @@ class MailhogClientTest extends TestCase
     }
 
     /**
-     * @return array<string, array{Swift_Message, Contact[]}>
+     * @return array<string, array{Email, Contact[]}>
      */
     public function messageProvider(): array
     {
@@ -297,10 +296,10 @@ class MailhogClientTest extends TestCase
      */
     public function it_should_hydrate_message_with_cc_and_bcc_recipients(): void
     {
-        $messageToSend = (new Swift_Message())
-            ->setFrom('me@myself.example')
-            ->setBody('Test body')
-            ->setSubject('Test subject')
+        $messageToSend = (new Email())
+            ->from('me@myself.example')
+            ->text('Test body')
+            ->subject('Test subject')
             ->addTo('myself@myself.example')
             ->addCc('cc@myself.example')
             ->addCc('cc2@myself.example')
@@ -309,37 +308,17 @@ class MailhogClientTest extends TestCase
 
         $this->sendMessage($messageToSend);
 
-        $this->assertEquals(3, $this->client->getNumberOfMessages());
+        $this->assertEquals(1, $this->client->getNumberOfMessages());
 
-        $messages = $this->client->findLatestMessages(3);
+        $messages = $this->client->findLatestMessages(1);
 
         $this->assertNotEmpty($messages[0]->messageId);
         $this->assertEquals(new Contact('me@myself.example'), $messages[0]->sender);
         $this->assertTrue($messages[0]->recipients->contains(new Contact('myself@myself.example')));
         $this->assertTrue($messages[0]->ccRecipients->contains(new Contact('cc@myself.example')));
         $this->assertTrue($messages[0]->ccRecipients->contains(new Contact('cc2@myself.example')));
-        $this->assertTrue($messages[0]->bccRecipients->contains(new Contact('bcc2@myself.example')));
         $this->assertEquals('Test subject', $messages[0]->subject);
         $this->assertEquals('Test body', $messages[0]->body);
-
-        $this->assertNotEmpty($messages[1]->messageId);
-        $this->assertEquals(new Contact('me@myself.example'), $messages[1]->sender);
-
-        $this->assertTrue($messages[1]->recipients->contains(new Contact('myself@myself.example')));
-        $this->assertTrue($messages[1]->ccRecipients->contains(new Contact('cc@myself.example')));
-        $this->assertTrue($messages[1]->ccRecipients->contains(new Contact('cc2@myself.example')));
-        $this->assertTrue($messages[1]->bccRecipients->contains(new Contact('bcc@myself.example')));
-        $this->assertEquals('Test subject', $messages[1]->subject);
-        $this->assertEquals('Test body', $messages[1]->body);
-
-        $this->assertNotEmpty($messages[2]->messageId);
-        $this->assertEquals(new Contact('me@myself.example'), $messages[2]->sender);
-        $this->assertTrue($messages[2]->recipients->contains(new Contact('myself@myself.example')));
-        $this->assertTrue($messages[2]->ccRecipients->contains(new Contact('cc@myself.example')));
-        $this->assertTrue($messages[2]->ccRecipients->contains(new Contact('cc2@myself.example')));
-        $this->assertCount(0, $messages[2]->bccRecipients);
-        $this->assertEquals('Test subject', $messages[2]->subject);
-        $this->assertEquals('Test body', $messages[2]->body);
     }
 
     /**
@@ -347,34 +326,25 @@ class MailhogClientTest extends TestCase
      */
     public function it_should_hydrate_message_with_bcc_recipients_only(): void
     {
-        $messageToSend = (new Swift_Message())
-            ->setFrom('me@myself.example')
-            ->setBody('Test body')
-            ->setSubject('Test subject')
+        $messageToSend = (new Email())
+            ->from('me@myself.example')
+            ->text('Test body')
+            ->subject('Test subject')
             ->addBcc('bcc@myself.example')
             ->addBcc('bcc2@myself.example');
 
         $this->sendMessage($messageToSend);
 
-        $this->assertEquals(2, $this->client->getNumberOfMessages());
+        $this->assertEquals(1, $this->client->getNumberOfMessages());
 
-        $messages = $this->client->findLatestMessages(2);
+        $messages = $this->client->findLatestMessages(1);
 
         $this->assertNotEmpty($messages[0]->messageId);
         $this->assertEquals(new Contact('me@myself.example'), $messages[0]->sender);
         $this->assertCount(0, $messages[0]->recipients);
         $this->assertCount(0, $messages[0]->ccRecipients);
-        $this->assertTrue($messages[0]->bccRecipients->contains(new Contact('bcc2@myself.example')));
         $this->assertEquals('Test subject', $messages[0]->subject);
         $this->assertEquals('Test body', $messages[0]->body);
-
-        $this->assertNotEmpty($messages[1]->messageId);
-        $this->assertEquals(new Contact('me@myself.example'), $messages[1]->sender);
-        $this->assertCount(0, $messages[1]->recipients);
-        $this->assertCount(0, $messages[1]->ccRecipients);
-        $this->assertTrue($messages[1]->bccRecipients->contains(new Contact('bcc@myself.example')));
-        $this->assertEquals('Test subject', $messages[1]->subject);
-        $this->assertEquals('Test body', $messages[1]->body);
     }
 
     /**
@@ -382,13 +352,13 @@ class MailhogClientTest extends TestCase
      */
     public function it_should_hydrate_names(): void
     {
-        $messageToSend = (new Swift_Message())
-            ->setFrom('me@myself.example', 'Me')
-            ->setTo('myself@myself.example', 'Myself')
-            ->addCc('cc@myself.example', 'CC Example')
-            ->addBcc('bcc@myself.example', 'BCC Example')
-            ->setBody('Test body')
-            ->setSubject('Test subject');
+        $messageToSend = (new Email())
+            ->from(new Address('me@myself.example', 'Me'))
+            ->to(new Address('myself@myself.example', 'Myself'))
+            ->addCc(new Address('cc@myself.example', 'CC Example'))
+            ->addBcc(new Address('bcc@myself.example', 'BCC Example'))
+            ->text('Test body')
+            ->subject('Test subject');
 
         $this->sendMessage($messageToSend);
 
@@ -397,7 +367,6 @@ class MailhogClientTest extends TestCase
         $this->assertEquals(new Contact('me@myself.example', 'Me'), $message->sender);
         $this->assertTrue($message->recipients->contains(new Contact('myself@myself.example', 'Myself')));
         $this->assertTrue($message->ccRecipients->contains(new Contact('cc@myself.example', 'CC Example')));
-        $this->assertTrue($message->bccRecipients->contains(new Contact('bcc@myself.example', 'BCC Example')));
     }
 
     /**
@@ -406,11 +375,11 @@ class MailhogClientTest extends TestCase
     public function it_should_hydrate_message_with_attachment(): void
     {
         $message = $this->createBasicMessage('me@myself.example', 'myself@myself.example', 'Test subject', 'Test body');
-        $message->attach(new Swift_Attachment(
-            new Swift_ByteStream_FileByteStream(__DIR__.'/../Fixtures/lorem-ipsum.txt'),
+        $message->attach(
+            $this->readFile(__DIR__.'/../Fixtures/lorem-ipsum.txt'),
             'lorem-ipsum.txt',
             'text/plain'
-        ));
+        );
 
         $this->sendMessage($message);
 
@@ -430,16 +399,16 @@ class MailhogClientTest extends TestCase
      */
     public function it_should_hydrate_message_with_attachment_before_body(): void
     {
-        $message = (new Swift_Message())
-            ->setFrom('me@myself.example')
-            ->setTo('myself@myself.example')
-            ->setSubject('Test subject')
-            ->attach(new Swift_Attachment(
-                new Swift_ByteStream_FileByteStream(__DIR__.'/../Fixtures/lorem-ipsum.txt'),
+        $message = (new Email())
+            ->from('me@myself.example')
+            ->to('myself@myself.example')
+            ->subject('Test subject')
+            ->attach(
+                $this->readFile(__DIR__.'/../Fixtures/lorem-ipsum.txt'),
                 'lorem-ipsum.txt',
                 'text/plain'
-            ))
-            ->addPart('Hello world', 'text/plain');
+            )
+            ->html('Hello world');
 
         $this->sendMessage($message);
 
@@ -458,7 +427,7 @@ class MailhogClientTest extends TestCase
      * @test
      * @dataProvider htmlMessageProvider
      */
-    public function it_should_prefer_html_part_over_plaintext_part(Swift_Message $messageToSend): void
+    public function it_should_prefer_html_part_over_plaintext_part(Email $messageToSend): void
     {
         $this->sendMessage($messageToSend);
 
@@ -470,35 +439,25 @@ class MailhogClientTest extends TestCase
     }
 
     /**
-     * @return array<string, Swift_Message[]>
+     * @return array<string, Email[]>
      */
     public function htmlMessageProvider(): array
     {
-        $message = (new Swift_Message())
-            ->setFrom('me@myself.example')
-            ->setTo('myself@myself.example')
-            ->setSubject('Test subject');
+        $message = (new Email())
+            ->from('me@myself.example')
+            ->to('myself@myself.example')
+            ->subject('Test subject');
 
         return [
             'html first' => [
                 (clone $message)
-                    ->addPart('<h1>Hello world</h1>', 'text/html')
-                    ->addPart('Hello world', 'text/plain')
+                    ->html('<h1>Hello world</h1>')
+                    ->text('Hello world')
             ],
             'plaintext first' => [
                 (clone $message)
-                    ->addPart('Hello world', 'text/plain')
-                    ->addPart('<h1>Hello world</h1>', 'text/html')
-            ],
-            'mime capitals, html first' => [
-                (clone $message)
-                    ->addPart('<h1>Hello world</h1>', 'TEXT/HTML')
-                    ->addPart('Hello world', 'TEXT/PLAIN')
-            ],
-            'mime capitals, plaintext first' => [
-                (clone $message)
-                    ->addPart('Hello world', 'TEXT/PLAIN')
-                    ->addPart('<h1>Hello world</h1>', 'TEXT/HTML')
+                    ->text('Hello world')
+                    ->html('<h1>Hello world</h1>')
             ],
         ];
     }
@@ -508,21 +467,21 @@ class MailhogClientTest extends TestCase
      */
     public function it_should_hydrate_attachments(): void
     {
-        $message = (new Swift_Message())
-            ->setFrom('me@myself.example')
-            ->setTo('myself@myself.example')
-            ->setSubject('Test subject')
-            ->attach(new Swift_Attachment(
-                new Swift_ByteStream_FileByteStream(__DIR__.'/../Fixtures/lorem-ipsum.txt'),
+        $message = (new Email())
+            ->from('me@myself.example')
+            ->to('myself@myself.example')
+            ->subject('Test subject')
+            ->attach(
+                $this->readFile(__DIR__.'/../Fixtures/lorem-ipsum.txt'),
                 'lorem-ipsum.txt',
                 'text/plain'
-            ))
-            ->attach(new Swift_Attachment(
-                new Swift_ByteStream_FileByteStream(__DIR__.'/../Fixtures/hog.png'),
+            )
+            ->attach(
+                $this->readFile(__DIR__.'/../Fixtures/hog.png'),
                 'hog.png',
                 'image/png'
-            ))
-            ->addPart('Hello world', 'text/plain');
+            )
+            ->text('Hello world');
 
         $this->sendMessage($message);
 
@@ -532,24 +491,14 @@ class MailhogClientTest extends TestCase
 
         $this->assertCount(2, $message->attachments);
 
-        $fixture = file_get_contents(__DIR__.'/../Fixtures/lorem-ipsum.txt');
-        if (false === $fixture) {
-            throw new RuntimeException(
-                sprintf('Unable to read "%s"', realpath(__DIR__).'/../Fixtures/lorem-ipsum.txt')
-            );
-        }
+        $fixture = $this->readFile(__DIR__.'/../Fixtures/lorem-ipsum.txt');
 
         $this->assertEquals(
             new Attachment('lorem-ipsum.txt', 'text/plain', $fixture),
             $message->attachments[0]
         );
 
-        $fixture = file_get_contents(__DIR__ . '/../Fixtures/hog.png');
-        if (false === $fixture) {
-            throw new RuntimeException(
-                sprintf('Unable to read "%s"', realpath(__DIR__).'/../Fixtures/hog.png')
-            );
-        }
+        $fixture = $this->readFile(__DIR__ . '/../Fixtures/hog.png');
 
         $this->assertEquals(
             new Attachment('hog.png', 'image/png', $fixture),
@@ -600,11 +549,11 @@ class MailhogClientTest extends TestCase
 </html>
 BODY;
 
-        $message = (new Swift_Message())
-            ->setFrom('me@myself.example')
-            ->setTo('myself@myself.example')
-            ->setSubject('Test subject')
-            ->addPart($body, 'text/html');
+        $message = (new Email())
+            ->from('me@myself.example')
+            ->to('myself@myself.example')
+            ->subject('Test subject')
+            ->html($body);
 
         $this->sendMessage($message);
 
@@ -626,11 +575,11 @@ BODY;
 </html>
 BODY;
 
-        $message = (new Swift_Message())
-            ->setFrom('me@myself.example', 'Myself')
-            ->setTo('me@myself.example')
-            ->setBody($body)
-            ->setSubject('Mailhog extension for Behat');
+        $message = (new Email())
+            ->from('me@myself.example')
+            ->to('me@myself.example')
+            ->html($body)
+            ->subject('Mailhog extension for Behat');
 
         $this->sendMessage($message);
 
@@ -647,16 +596,31 @@ BODY;
      */
     public function it_should_decode_quoted_printable_text_messages(): void
     {
-        $message = (new Swift_Message())
-            ->setFrom('me@myself.example')
-            ->setTo('myself@myself.example')
-            ->setSubject('Test subject')
-            ->addPart('1 + 1 = 2', 'text/plain');
+        $message = (new Email())
+            ->from('me@myself.example')
+            ->to('myself@myself.example')
+            ->subject('Test subject')
+            ->text('1 + 1 = 2');
 
         $this->sendMessage($message);
 
         $message = $this->client->getLastMessage();
 
         $this->assertEquals('1 + 1 = 2', $message->body);
+    }
+
+    private function readFile(string $path): string
+    {
+        $contents = file_get_contents($path);
+        if (false === $contents) {
+            throw new RuntimeException(
+                sprintf(
+                    'Unable to read file at "%s" - does it exist and is it readable?',
+                    $path
+                )
+            );
+        }
+
+        return $contents;
     }
 }
