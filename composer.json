@@ -33,7 +33,7 @@
         "phpmd/phpmd": "^2.9.1",
         "phpunit/phpunit": "^8.0",
         "php-http/curl-client": "^2.0",
-        "swiftmailer/swiftmailer": "^6.2.3",
+        "swiftmailer/swiftmailer": "6.2.3",
         "phpstan/phpstan": "^0.12.64",
         "pdepend/pdepend": "^2.5",
         "nyholm/psr7": "^1.2",
