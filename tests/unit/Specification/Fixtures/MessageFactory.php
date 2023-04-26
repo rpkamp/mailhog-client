@@ -17,8 +17,8 @@ final class MessageFactory
             '1234',
             new Contact('me@myself.example', 'Myself'),
             new ContactCollection([new Contact('someoneelse@myself.example')]),
-            new ContactCollection([]),
-            new ContactCollection([]),
+            new ContactCollection([new Contact('someone-as-cc@myself.example')]),
+            new ContactCollection([new Contact('someone-as-bcc@myself.example')]),
             'Hello world!',
             'Hi there',
             [
