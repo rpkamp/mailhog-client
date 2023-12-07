@@ -1,11 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace rpkamp\Mailhog;
 
 use Generator;
-use Http\Client\HttpClient;
-use Http\Message\RequestFactory;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use rpkamp\Mailhog\Message\Message;
 use rpkamp\Mailhog\Message\MessageFactory;
 use rpkamp\Mailhog\Specification\Specification;
@@ -22,24 +24,34 @@ use function sprintf;
 class MailhogClient
 {
     /**
-     * @var HttpClient
+     * @var ClientInterface
      */
     private $httpClient;
 
     /**
-     * @var RequestFactory
+     * @var RequestFactoryInterface
      */
     private $requestFactory;
+
+    /**
+     * @var StreamFactoryInterface
+     */
+    private $streamFactory;
 
     /**
      * @var string
      */
     private $baseUri;
 
-    public function __construct(HttpClient $client, RequestFactory $requestFactory, string $baseUri)
-    {
+    public function __construct(
+        ClientInterface $client,
+        RequestFactoryInterface $requestFactory,
+        StreamFactoryInterface $streamFactory,
+        string $baseUri
+    ) {
         $this->httpClient = $client;
         $this->requestFactory = $requestFactory;
+        $this->streamFactory = $streamFactory;
         $this->baseUri = rtrim($baseUri, '/');
     }
 
@@ -165,12 +177,10 @@ class MailhogClient
 
         $request = $this->requestFactory->createRequest(
             'POST',
-            sprintf('%s/api/v1/messages/%s/release', $this->baseUri, $messageId),
-            [],
-            $body
+            sprintf('%s/api/v1/messages/%s/release', $this->baseUri, $messageId)
         );
 
-        $this->httpClient->sendRequest($request);
+        $this->httpClient->sendRequest($request->withBody($this->streamFactory->createStream($body)));
     }
 
     public function getMessageById(string $messageId): Message
