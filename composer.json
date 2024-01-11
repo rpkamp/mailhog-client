@@ -7,10 +7,6 @@
         {
             "name": "Remon van de Kamp",
             "email": "rpkamp@gmail.com"
-        },
-        {
-            "name": "Thibaut ALGRIN",
-            "email": "algrin.thibaut@gmail.com"
         }
     ],
     "autoload": {
