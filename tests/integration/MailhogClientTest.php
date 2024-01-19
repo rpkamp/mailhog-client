@@ -5,7 +5,7 @@ namespace rpkamp\Mailhog\Tests\integration;
 
 use Generator;
 use Http\Client\Curl\Client;
-use Nyholm\Psr7\Factory\HttplugFactory;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use rpkamp\Mailhog\MailhogClient;
 use rpkamp\Mailhog\Message\Mime\Attachment;
@@ -35,7 +35,12 @@ class MailhogClientTest extends TestCase
 
     public function setUp(): void
     {
-        $this->client = new MailhogClient(new Client(), new HttplugFactory(), $_ENV['mailhog_api_uri']);
+        $this->client = new MailhogClient(
+            new Client(),
+            new Psr17Factory(),
+            new Psr17Factory(),
+            $_ENV['mailhog_api_uri']
+        );
         $this->client->purgeMessages();
     }
 

@@ -26,8 +26,8 @@
         "ext-iconv": "*",
         "php-http/client-implementation": "^1.0",
         "php-http/httplug": "^1.0|^2.0",
-        "php-http/message-factory": "^1.0",
-        "psr/http-message": "^1.0"
+        "psr/http-message": "^2.0",
+        "psr/http-factory": "^1.0"
     },
     "require-dev": {
         "phpmd/phpmd": "^2.9.1",
@@ -40,5 +40,11 @@
         "php-parallel-lint/php-parallel-lint": "^1.2",
         "egulias/email-validator": "^2.1.23",
         "symfony/mailer": "^5.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }
