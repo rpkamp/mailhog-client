@@ -16,16 +16,16 @@ code-style: phpmd phpcs
 phpmd:
 	vendor/bin/phpmd src/ xml phpmd.xml --suffixes php
 
-# Check code adheres to PSR-2
+# Check if code adheres to PSR-2
 phpcs:
 	vendor/bin/phpcs
 
 # Run unit tests
 unit-tests:
 ifeq ($(CI),true)
-	vendor/bin/phpunit --testdox -v --coverage-clover=coverage.xml
+	vendor/bin/phpunit --coverage-clover=coverage.xml
 else
-	vendor/bin/phpunit --testdox -v
+	vendor/bin/phpunit
 endif
 
 phpstan:

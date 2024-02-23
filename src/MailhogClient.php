@@ -7,6 +7,7 @@ namespace rpkamp\Mailhog;
 use Generator;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use rpkamp\Mailhog\Message\Message;
 use rpkamp\Mailhog\Message\MessageFactory;
@@ -14,6 +15,7 @@ use rpkamp\Mailhog\Specification\Specification;
 use RuntimeException;
 
 use function array_filter;
+use function assert;
 use function count;
 use function iterator_to_array;
 use function json_decode;
@@ -178,9 +180,16 @@ class MailhogClient
         $request = $this->requestFactory->createRequest(
             'POST',
             sprintf('%s/api/v1/messages/%s/release', $this->baseUri, $messageId)
-        );
+        )->withBody($this->streamFactory->createStream($body));
 
-        $this->httpClient->sendRequest($request->withBody($this->streamFactory->createStream($body)));
+        /**
+         * Help PHPStan see that this is actually a RequestInterface. withBody is a method
+         * on MessageInterface and has return type MessageInterface in version 1.0 of psr/http-message.
+         * This has been fixed in version 2.0 of psr/http-message where the return type is `static`.
+         */
+        assert($request instanceof RequestInterface);
+
+        $this->httpClient->sendRequest($request);
     }
 
     public function getMessageById(string $messageId): Message
