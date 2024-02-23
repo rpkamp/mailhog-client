@@ -4,8 +4,6 @@ on:
   push:
     branches: [master]
   pull_request:
-  schedule:
-    - cron: '39 2 * * 0'
 
 jobs:
   tests:
@@ -19,17 +17,15 @@ jobs:
         ports:
           - 2025:2025
           - 9025:9025
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     name: Test
     strategy:
       fail-fast: false
       matrix:
         php: ["7.2", "7.3", "7.4", "8.0"]
         composer-flags: ["", "--prefer-lowest"]
-
     env:
       COMPOSER_ROOT_VERSION: dev-master
-
     steps:
       - uses: actions/checkout@v2
 
@@ -37,10 +33,10 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "${{ matrix.php }}"
+          coverage: pcov
 
       - name: Install dependencies
         run: composer update ${{ matrix.composer-flags }}
 
       - name: Run tests
         run: make test
-
