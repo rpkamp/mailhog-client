@@ -1,6 +1,6 @@
 # Mailhog API Client for PHP ![Packagist Version](https://img.shields.io/packagist/v/rpkamp/mailhog-client)
 
-A simple PHP (7.2+) client for [Mailhog][mailhog].
+A simple PHP (8.1+) client for [Mailhog][mailhog].
 
 ## Design Goals
 
