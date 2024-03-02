@@ -9,20 +9,8 @@ use function trim;
 
 class Contact
 {
-    /**
-     * @var string
-     */
-    public $emailAddress;
-
-    /**
-     * @var string|null
-     */
-    public $name;
-
-    public function __construct(string $emailAddress, ?string $name = null)
+    public function __construct(private string $emailAddress, private string |null $name = null)
     {
-        $this->emailAddress = $emailAddress;
-        $this->name = $name;
     }
 
     public static function fromString(string $contact): Contact

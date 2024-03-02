@@ -13,43 +13,13 @@ use function stripos;
 
 class MimePart
 {
-    /**
-     * @var string
-     */
-    private $contentType;
-
-    /**
-     * @var string|null
-     */
-    private $contentTransferEncoding;
-
-    /**
-     * @var bool
-     */
-    private $isAttachment;
-
-    /**
-     * @var string|null
-     */
-    private $filename;
-
-    /**
-     * @var string
-     */
-    private $body;
-
     private function __construct(
-        string $contentType,
-        ?string $contentTransferEncoding,
-        bool $isAttachment,
-        ?string $filename,
-        string $body
+        private string $contentType,
+        private string |null $contentTransferEncoding,
+        private bool $isAttachment,
+        private string |null $filename,
+        private string $body
     ) {
-        $this->contentType = $contentType;
-        $this->contentTransferEncoding = $contentTransferEncoding;
-        $this->isAttachment = $isAttachment;
-        $this->filename = $filename;
-        $this->body = $body;
     }
 
     /**

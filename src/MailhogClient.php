@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace rpkamp\Mailhog;
@@ -25,42 +24,19 @@ use function sprintf;
 
 class MailhogClient
 {
-    /**
-     * @var ClientInterface
-     */
-    private $httpClient;
-
-    /**
-     * @var RequestFactoryInterface
-     */
-    private $requestFactory;
-
-    /**
-     * @var StreamFactoryInterface
-     */
-    private $streamFactory;
-
-    /**
-     * @var string
-     */
-    private $baseUri;
-
     public function __construct(
-        ClientInterface $client,
-        RequestFactoryInterface $requestFactory,
-        StreamFactoryInterface $streamFactory,
-        string $baseUri
+        private ClientInterface $httpClient,
+        private RequestFactoryInterface $requestFactory,
+        private StreamFactoryInterface $streamFactory,
+        private string $baseUri
     ) {
-        $this->httpClient = $client;
-        $this->requestFactory = $requestFactory;
-        $this->streamFactory = $streamFactory;
         $this->baseUri = rtrim($baseUri, '/');
     }
 
     /**
      * @return Generator|Message[]
      */
-    public function findAllMessages(int $limit = 50)
+    public function findAllMessages(int $limit = 50): Generator
     {
         $start = 0;
         while (true) {

@@ -11,63 +11,18 @@ use function sprintf;
 class Message
 {
     /**
-     * @var string
-     */
-    public $messageId;
-
-    /**
-     * @var Contact
-     */
-    public $sender;
-
-    /**
-     * @var ContactCollection
-     */
-    public $recipients;
-
-    /**
-     * @var ContactCollection
-     */
-    public $ccRecipients;
-
-    /**
-     * @var ContactCollection
-     */
-    public $bccRecipients;
-
-    /**
-     * @var string
-     */
-    public $subject;
-
-    /**
-     * @var string
-     */
-    public $body;
-
-    /**
-     * @var Attachment[]
-     */
-    public $attachments;
-
-    /**
-     * @var Headers
-     */
-    public $headers;
-
-    /**
      * @param Attachment[] $attachments
      */
     public function __construct(
-        string $messageId,
-        Contact $sender,
-        ContactCollection $recipients,
-        ContactCollection $ccRecipients,
-        ContactCollection $bccRecipients,
-        string $subject,
-        string $body,
-        array $attachments,
-        Headers $headers
+        public string $messageId,
+        public Contact $sender,
+        public ContactCollection $recipients,
+        public ContactCollection $ccRecipients,
+        public ContactCollection $bccRecipients,
+        public string $subject,
+        public string $body,
+        public array $attachments,
+        public Headers $headers
     ) {
         foreach ($attachments as $i => $attachment) {
             if (!$attachment instanceof Attachment) {
@@ -81,15 +36,5 @@ class Message
                 );
             }
         }
-
-        $this->messageId = $messageId;
-        $this->sender = $sender;
-        $this->recipients = $recipients;
-        $this->ccRecipients = $ccRecipients;
-        $this->bccRecipients = $bccRecipients;
-        $this->subject = $subject;
-        $this->body = $body;
-        $this->attachments = $attachments;
-        $this->headers = $headers;
     }
 }

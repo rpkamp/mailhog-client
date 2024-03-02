@@ -28,9 +28,8 @@
     <!-- require declare(strict_types=1) in each file, with 0 empty lines above and 1 empty line below -->
     <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
         <properties>
-            <property name="newlinesCountBetweenOpenTagAndDeclare" value="1" />
+            <property name="linesCountBeforeDeclare" value="0" />
             <property name="spacesCountAroundEqualsSign" value="0" />
-            <property name="newlinesCountAfterDeclare" value="2" />
         </properties>
     </rule>
 

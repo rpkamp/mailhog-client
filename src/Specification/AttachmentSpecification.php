@@ -7,14 +7,8 @@ use rpkamp\Mailhog\Message\Message;
 
 final class AttachmentSpecification implements Specification
 {
-    /**
-     * @var string
-     */
-    private $filename;
-
-    public function __construct(string $filename)
+    public function __construct(private string $filename)
     {
-        $this->filename = $filename;
     }
 
     public function isSatisfiedBy(Message $message): bool

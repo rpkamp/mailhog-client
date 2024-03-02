@@ -5,22 +5,16 @@ namespace rpkamp\Mailhog\Specification;
 
 use rpkamp\Mailhog\Message\Message;
 
-use function strpos;
+use function str_contains;
 
 final class BodySpecification implements Specification
 {
-    /**
-     * @var string
-     */
-    private $snippet;
-
-    public function __construct(string $snippet)
+    public function __construct(private string $snippet)
     {
-        $this->snippet = $snippet;
     }
 
     public function isSatisfiedBy(Message $message): bool
     {
-        return false !== strpos($message->body, $this->snippet);
+        return str_contains($message->body, $this->snippet);
     }
 }
