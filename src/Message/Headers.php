@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace rpkamp\Mailhog\Message;
@@ -10,16 +9,10 @@ use function strtolower;
 class Headers
 {
     /**
-     * @var array<string, string> $headers
-     */
-    private $headers;
-
-    /**
      * @param array<string, string> $headers
      */
-    public function __construct(array $headers)
+    public function __construct(private array $headers)
     {
-        $this->headers = $headers;
     }
 
     /**
@@ -51,7 +44,7 @@ class Headers
 
             $decoded = iconv_mime_decode($header[0]);
 
-            $headers[strtolower($name)] = $decoded ? $decoded : $header[0];
+            $headers[strtolower($name)] = $decoded ?: $header[0];
         }
 
         return new Headers($headers);

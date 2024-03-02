@@ -19,16 +19,10 @@ use function trim;
 class ContactCollection implements Countable, IteratorAggregate
 {
     /**
-     * @var array|Contact[]
-     */
-    private $contacts;
-
-    /**
      * @param Contact[] $contacts
      */
-    public function __construct(array $contacts)
+    public function __construct(private array $contacts)
     {
-        $this->contacts = $contacts;
     }
 
     public static function fromString(string $contacts): ContactCollection

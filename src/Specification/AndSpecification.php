@@ -10,20 +10,8 @@ use function count;
 
 final class AndSpecification implements Specification
 {
-    /**
-     * @var Specification
-     */
-    private $left;
-
-    /**
-     * @var Specification
-     */
-    private $right;
-
-    public function __construct(Specification $left, Specification $right)
+    public function __construct(private Specification $left, private Specification $right)
     {
-        $this->left = $left;
-        $this->right = $right;
     }
 
     public static function all(Specification $specification, Specification ...$other): Specification

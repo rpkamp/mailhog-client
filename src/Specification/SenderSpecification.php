@@ -8,14 +8,8 @@ use rpkamp\Mailhog\Message\Message;
 
 final class SenderSpecification implements Specification
 {
-    /**
-     * @var Contact
-     */
-    private $sender;
-
-    public function __construct(Contact $sender)
+    public function __construct(private Contact $sender)
     {
-        $this->sender = $sender;
     }
 
     public function isSatisfiedBy(Message $message): bool

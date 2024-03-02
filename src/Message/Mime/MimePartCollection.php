@@ -10,16 +10,10 @@ use function stripos;
 class MimePartCollection
 {
     /**
-     * @var MimePart[]
-     */
-    private $mimeParts;
-
-    /**
      * @param MimePart[] $mimeParts
      */
-    private function __construct(array $mimeParts)
+    private function __construct(private array $mimeParts)
     {
-        $this->mimeParts = $mimeParts;
     }
 
     /**

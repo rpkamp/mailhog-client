@@ -21,7 +21,7 @@
     },
     "minimum-stability": "stable",
     "require": {
-        "php": "^7.2 || ^8.0",
+        "php": "^8.1",
         "ext-json": "*",
         "ext-iconv": "*",
         "php-http/client-implementation": "^1.0",
@@ -31,12 +31,12 @@
     },
     "require-dev": {
         "phpmd/phpmd": "^2.9.1",
-        "phpunit/phpunit": "^8.0 || ^9.0 || ^10.0",
+        "phpunit/phpunit": "^10.0",
         "php-http/curl-client": "^2.0",
         "phpstan/phpstan": "^0.12.64",
         "pdepend/pdepend": "^2.5",
         "nyholm/psr7": "^1.2",
-        "doctrine/coding-standard": "^8.0",
+        "doctrine/coding-standard": "^9.0",
         "php-parallel-lint/php-parallel-lint": "^1.2",
         "egulias/email-validator": "^2.1.23",
         "symfony/mailer": "^5.0"

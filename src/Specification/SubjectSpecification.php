@@ -7,14 +7,8 @@ use rpkamp\Mailhog\Message\Message;
 
 final class SubjectSpecification implements Specification
 {
-    /**
-     * @var string
-     */
-    private $subject;
-
-    public function __construct(string $subject)
+    public function __construct(private string $subject)
     {
-        $this->subject = $subject;
     }
 
     public function isSatisfiedBy(Message $message): bool
