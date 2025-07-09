@@ -36,7 +36,7 @@ class ContactCollection implements Countable, IteratorAggregate
                 static function (string $contact) {
                     return Contact::fromString($contact);
                 },
-                array_map('trim', str_getcsv($contacts))
+                array_map('trim', str_getcsv($contacts, escape: '\\'))
             )
         );
     }
