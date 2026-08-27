@@ -53,6 +53,13 @@ To prevent port collissions with any other Mailhog instances while testing the t
 
 If you want different ports you can copy `phpunit.xml.dist` to `phpunit.xml` and change the port numbers in the environment variables therein.
 
+## Support
+
+Like this package? Buy me a coffee 🙂
+
+[Send a tip via Revolut][revolut]
+
 [mailhog]: https://github.com/mailhog/MailHog
 [httplug]: https://github.com/php-http/httplug
 [httplug-docs]: http://docs.php-http.org/en/latest/httplug/users.html
+[revolut]: https://revolut.me/rpkamp
